@@ -555,6 +555,14 @@ Association Analysis Algorithms 有 Apriori、FP Growth、Eclat，都没听过�
 对于这样的问题，算法解决的问题是如何最效率的找到所有的 有效的rule。
 
 
+## Graph Analytics for Big Data
+
+ 摘要：
+
+1. Graph的表示形式： 顶点、矩阵（表示边）； 顶点、边集合。
+
+
+
 
 
 
