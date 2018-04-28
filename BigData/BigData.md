@@ -471,7 +471,7 @@ pipeline, spark
 #### DecisionTree Classifier算法相关
 
 - 决策分割方法：  计算度量 impurity： gini？？这个细节上还不是很了解。
-- 一些算法参数： 分割深度， 节点上实例最少数量（防止过拟合）
+- 一些算法参数： 分割深度， 节点上实例最少数量（防止过拟合）
 - pre-pruning， 设定一些条件，提前stop，防止决策过深过细。
 - post-pruning，一开始构建整个决策树，然后剪去不能改善 泛化误差的分支。 这种计算量很大，但是用的最多。
 
@@ -479,7 +479,7 @@ pipeline, spark
 #### 评估模型相关
 
 - 准确度： accuracy：  预测正确的（TP + TN ) / 所有测试样本数( TP + TN + FP + FN)
-- 精确度： precision：  实际P，预测P的（TP) / 所有预测为P的 (TP + FP)
+- 精确度： precision：  实际P，预测P的（TP) / 所有预测为P的 (TP + FP)
 - 召回度： recall：  实际P， 预测P 的（TP） / 测试样本为 P的（TP + FN)
 
 这里我主要想重新理解一下  $F_\beta$，这个值权衡了 精确度和召回度。
@@ -495,7 +495,7 @@ F_\beta &= (1 + \beta^2) \frac{precision * recall}{ \beta^2 * precision + recall
 如何理解呢？ 当 $\beta > 1$ 时， 增大了 precision的权重， 降低了 recall的权重，所以 precision比recall重要。 当 $\beta < 1$ 时， 增大了recall的权重，降低了 precision的权重，所以 recall比 precision重要。
 
 
-当然直观上，并不能直接看出来。所以一种方便的记忆方法就是 $\beta$ 与 precision 相乘，为了提高 precision的权重。 所以 $\beta> 1$， 则 precision重要。
+当然直观上，并不能直接看出来。所以一种方便的记忆方法就是 $\beta$ 与 precision 相乘，为了提高 precision的权重。 所以 $\beta> 1$， 则 precision重要。
 
 
 ### ML: Regression
@@ -507,16 +507,16 @@ F_\beta &= (1 + \beta^2) \frac{precision * recall}{ \beta^2 * precision + recall
 
 ### ML: Cluster Analysis
 
-这里只介绍了 K-means 算法。回顾一下算法：
+这里只介绍了 K-means 算法。回顾一下算法：
 
-1. 随机分配 k 个中心点
-2. 对所有样本计算分配到最近的中心点。（这里需要 定义 distance度量）
+1. 随机分配 k 个中心点
+2. 对所有样本计算分配到最近的中心点。（这里需要 定义 distance度量）
 3. 对所有中心点构成的簇重新计算中心位置。
 4. 重复 2、3 直到 中心点位置不再变化，或者变化较小。
 
 注意 K-means 这个算法通用性比较差。 很容易陷入局部最优解，而且离最优解相差很大。 通常做法是重复几次 K-means算法，评估聚类最优的解： 计算 WSSE(Within-Cluster Sum of Squared Error) 最小的。但 WSSE 仅仅是一个评判标准。
 
-一般 k越大， WSSE越小。 如何选择k？ 感觉、直觉，或者用 Elbow Method ，找一个拐点，来找到 好的 k。
+一般 k越大， WSSE越小。 如何选择k？ 感觉、直觉，或者用 Elbow Method ，找一个拐点，来找到 好的 k。
 
 小结：K-means算法的主要问题
 
@@ -539,8 +539,8 @@ Association Analysis的角度比较特殊， 它定义了 item sets，定义了 
 
 - n-item set，包含 n 个item 的集合。
 - support， frequency of item set，其实就是 item set包含的item同时出现的频率。
-- Antecedent，前提条件？ 就是 某个 item set
-- Consequent，结果， 也是某个 item set
+- Antecedent，前提条件？ 就是 某个 item set
+- Consequent，结果， 也是某个 item set
 - Rule(X -> Y) ，  出现X条件下， 同时也出现 Y
 - Confidence(X -> Y)， 出现X条件下， 同时也出现 Y的概率
 
