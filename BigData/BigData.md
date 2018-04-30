@@ -1,41 +1,6 @@
-<!-- TOC depthFrom:2 depthTo:4 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [Introduction to Big data](#introduction-to-big-data)
-	- [V's of Big Data](#vs-of-big-data)
-- [Foundations for Big Data Systems and Programming](#foundations-for-big-data-systems-and-programming)
-	- [HDFS，Hadoop Distributed File System](#hdfshadoop-distributed-file-system)
-	- [YARN，The Resource Manager for Hadoop](#yarnthe-resource-manager-for-hadoop)
-	- [MapReduce](#mapreduce)
-	- [什么时候用Hadoop](#什么时候用hadoop)
-	- [XaaS, Anything as a Service](#xaas-anything-as-a-service)
-	- [open-source tools built for Hadoop](#open-source-tools-built-for-hadoop)
-- [Big Data Modeling and Management](#big-data-modeling-and-management)
-	- [Data Mode](#data-mode)
-	- [Streaming Data](#streaming-data)
-	- [DBMS, Database Management System](#dbms-database-management-system)
-		- [Why DBMS](#why-dbms)
-		- [Parallel and Distributed DBMS](#parallel-and-distributed-dbms)
-		- [DBMS and MapReduce-style System](#dbms-and-mapreduce-style-system)
-		- [Shifting Requirements](#shifting-requirements)
-		- [Mixed Solution](#mixed-solution)
-	- [BDMS, Big Data Management System](#bdms-big-data-management-system)
-		- [Desired Characteristic of BDMS](#desired-characteristic-of-bdms)
-		- [ACID 和 BASE](#acid-和-base)
-		- [CAP Theorem](#cap-theorem)
-		- [一些 BDMS介绍](#一些-bdms介绍)
-- [Big Data Integration and Processing](#big-data-integration-and-processing)
-	- [SQL: Querying Data](#sql-querying-data)
-		- [SQL, Structured Query Language](#sql-structured-query-language)
-		- [Querying 2 Relations](#querying-2-relations)
-		- [Subqueries](#subqueries)
-		- [Aggregate 聚合操作](#aggregate-聚合操作)
-		- [MongoDB: Documents](#mongodb-documents)
-	- [Big Data Integration](#big-data-integration)
-		- [一些工具](#一些工具)
-	- [Big Data Processing](#big-data-processing)
 
-<!-- /TOC -->
-
+# BigData
 
 by University of California, San Diego
 
@@ -46,7 +11,7 @@ by University of California, San Diego
 2. 什么是 data stream？
 
 
-## Introduction to Big data
+# Introduction to Big data
 
 大数据主要来源：
 
@@ -61,7 +26,7 @@ by University of California, San Diego
 Programming Models，例如 MapReduce，用于分布式计算。
 
 
-### V's of Big Data
+## V's of Big Data
 
 - Volume == Size
 - Variety == Complexity，数据复杂度。
@@ -73,16 +38,16 @@ Programming Models，例如 MapReduce，用于分布式计算。
 
 Hadoop Ecosystem
 
-### HDFS，Hadoop Distributed File System
+## HDFS，Hadoop Distributed File System
 
-### YARN，The Resource Manager for Hadoop
+## YARN，The Resource Manager for Hadoop
 
 - Resource Manager
 - Node Manager
 - Application Master，协商者，向Resource Manager请求资源，要求Node Manager完成工作。
 - Container
 
-### MapReduce
+## MapReduce
 
 MapReduce 的优点： 简化并行计算，充分利用分布式系统。
 
@@ -100,7 +65,7 @@ MapReduce 不适用于以下情景：
 2. 依赖性（相关性）强的任务
 3. 交互性不友好，每次计算需要读入所有数据，运行完之后才能得到结果。
 
-### 什么时候用Hadoop
+## 什么时候用Hadoop
 
 Hadoop并不是全能的，只适用于一部分应用场景，例如 大数据、并行计算任务。
 
@@ -113,13 +78,13 @@ Hadoop不适用于：
 - Random Data Access
 
 
-### XaaS, Anything as a Service
+## XaaS, Anything as a Service
 
 IaaS: Infrastructure as a Service, 例如 AWS EC2
 PaaS: Platform as a Service， 例如  Google App Engine
 SaaS：Software as a Service， 例如 Dropbox。
 
-### open-source tools built for Hadoop
+## open-source tools built for Hadoop
 
 - Hive， for SQL-like queries.
 - Storm， Stream Data 流数据处理。
@@ -130,9 +95,9 @@ SaaS：Software as a Service， 例如 Dropbox。
 Gephi可以看图形数据，比如社交网络。
 
 
-## Big Data Modeling and Management
+# Big Data Modeling and Management
 
-### Data Mode
+## Data Mode
 
 什么是 Data Model？ 我的理解就是描述数据结构特征。数据有各种各样的形式。 Data Model 定义了数据的组织结构和处理方式(Structures, Operations, Constraints)。
 
@@ -147,14 +112,14 @@ Gephi可以看图形数据，比如社交网络。
 - Vector Space Model (将文档转成 vector，用于比较相似度)
 - Graph Data Model
 
-### Streaming Data
+## Streaming Data
 
 流式数据。对一些数据需要实时处理。
 
 
-### DBMS, Database Management System
+## DBMS, Database Management System
 
-#### Why DBMS
+### Why DBMS
 
 Old Times:  Data = Files， 涉及一堆问题：
 
@@ -174,7 +139,7 @@ DBMS 的优点：
 5. 并发访问
 
 
-#### Parallel and Distributed DBMS
+### Parallel and Distributed DBMS
 
 1. Parallel database system
 
@@ -185,7 +150,7 @@ DBMS 的优点：
 分布式数据库系统。数据并不装到一个篮子里。
 
 
-#### DBMS and MapReduce-style System
+### DBMS and MapReduce-style System
 
 二者关注点不同：
 
@@ -193,7 +158,7 @@ DBMS 的优点：
 2. MapReduce-style System： Complex Data processing over a cluster of machines.
 
 
-#### Shifting Requirements
+### Shifting Requirements
 
 对数据库的需求发生了变化：
 
@@ -205,16 +170,16 @@ DBMS 的优点：
 
 3. 同时结合 事务（transaction）和 分析（Analytical）功能
 
-#### Mixed Solution
+### Mixed Solution
 
 - DBMS on HDFS
 - Spark: Relational operations on in MapReduce system
 - Streaming input to DBMS
 
 
-### BDMS, Big Data Management System
+## BDMS, Big Data Management System
 
-#### Desired Characteristic of BDMS
+### Desired Characteristic of BDMS
 
 理想的 BDMS 特性：
 
@@ -227,7 +192,7 @@ DBMS 的优点：
 - Scale gracefully to manage and query large volume of data. 良好的伸缩性。
 - Full data management capability. 数据管理和维护方便。
 
-#### ACID 和 BASE
+### ACID 和 BASE
 
 ACID: 增删改查。但是很难在 BDMS上维护
 
@@ -240,7 +205,7 @@ BASE：
 不太理解意思，大概是指BDMS需要保证基本的可靠性。 每次请求都有响应，但不一定有结果。
 
 
-#### CAP Theorem
+### CAP Theorem
 
 一个分布式系统不可能同时满足：
 
@@ -249,9 +214,9 @@ BASE：
 - Partition Tolerance ？
 
 
-#### 一些 BDMS介绍
+### 一些 BDMS介绍
 
-##### Redis
+#### Redis
 
 - 键值存储
 - 内存
@@ -259,7 +224,7 @@ BASE：
 - Replication， Master/Slave
 - 很快，高并发
 
-##### Aerospike
+#### Aerospike
 
 > 是一个以分布式为核心基础，可基于行随机存取内存中索引、数据或SSD存储中数据的数据库。它主要用于百G、数T等大数据量并且在数万以上高并发情况下，对性能也有ms读取插入要求的场景。目前主要集中于互联网广告行业，如eXelate、BlueKai、MediaV、 InMobi、 applovin等。
 
@@ -269,7 +234,7 @@ BASE：
 - 混合架构, 索引存储在 RAM 中，而数据存储在闪存/固态硬盘 (SSD) 上。
 
 
-##### AsterixDB - a DBMS for Semistructured Data
+#### AsterixDB - a DBMS for Semistructured Data
 
 Apache 开源项目
 
@@ -282,25 +247,25 @@ Apache 开源项目
 - 声明式 查询语言
 
 
-##### Solr
+#### Solr
 
 > Solr是一个高性能，采用Java5开发，基于Lucene的全文搜索服务器。同时对其进行了扩展，提供了比Lucene更为丰富的查询语言，同时实现了可配置、可扩展并对查询性能进行了优化，并且提供了一个完善的功能管理界面，是一款非常优秀的全文搜索引擎。
 
 全文搜索。。
 
 
-##### Vertica
+#### Vertica
 
 > Vertica是一款基于列存储的 MPP （massively parallel processing）架构的数据库。它可以支持存放多至PB（Petabyte）级别的结构化数据。Vertica是由关系数据库大师Michael Stonebraker(2014 年图灵奖获得者)所创建，于2011年被惠普收购并成为其核心大数据平台软件。
 
 
 
-## Big Data Integration and Processing
+# Big Data Integration and Processing
 
-### SQL: Querying Data
+## SQL: Querying Data
 
 
-#### SQL, Structured Query Language
+### SQL, Structured Query Language
 
 这里主要理解，如何在 分片机器上（partition）上面做查询。
 
@@ -320,7 +285,7 @@ indexing分两种：
 
 索引需要额外的存储空间，但是可以明显提升性能和速度。
 
-#### Querying 2 Relations
+### Querying 2 Relations
 
 理解join操作。 比如查询两个表，进行 join操作。 按照SPJ（Select-Project-Join）步骤，进行。
 
@@ -328,14 +293,14 @@ indexing分两种：
 
 如果使用的是 Spark这样的高级应用， 则不需要关注这些细节。 它会自动处理好这些细节。但是如果仅仅用Hadoop（HDFS）， 需要自己实现这些算法。
 
-#### Subqueries
+### Subqueries
 
 分两种：
 
 - 不相关的子查询。 这种子查询可以单独提出来，单独执行。与外面查询无关。
 - 相关的子查询。 这种子查询基于一些外部条件。 在外部需要什么的时候执行一次子查询。但通常都会缓存优化，避免重复查询。
 
-#### Aggregate 聚合操作
+### Aggregate 聚合操作
 
 AVG、SUM。
 
@@ -343,7 +308,7 @@ AVG、SUM。
 
 注意一点： partitions之间会有一些数据交互，但通常都是最小化的。底层的细节不需要关心，只需要了解即可。
 
-#### MongoDB: Documents
+### MongoDB: Documents
 
 `db.collection.find(<query filter>, <projection>).<cursor modifier>`
 
@@ -360,7 +325,7 @@ MongoDB支持的操作：
 
 更具体的操作见官网。
 
-### Big Data Integration
+## Big Data Integration
 
 很复杂，大致理解一下：
 
@@ -388,9 +353,9 @@ Data Exchange：
 - Query transformation？？
 
 
-#### 一些工具
+### 一些工具
 
-##### Splunk
+#### Splunk
 
 > Splunk is an American multinational corporation based in San Francisco, California, that produces software for searching, monitoring, and analyzing machine-generated big data, via a Web-style interface.
 
@@ -399,19 +364,19 @@ Data Exchange：
 其优势在于什么？？
 
 
-##### Datameer
+#### Datameer
 
 发现有很多数据集成分析工具。 那么问题在于，如何需求，如何选择？
 
 
-### Big Data Processing
+## Big Data Processing
 
 pipeline, spark
 
 
 
 
-## Machine Learning With Big Data
+# Machine Learning With Big Data
 
 
 一些概念：
@@ -430,12 +395,12 @@ pipeline, spark
 - Spark，大数据真正利器。
 
 
-### Data Exploring
+## Data Exploring
 
 主要是为了更好的理解数据，有 Summary Statistics 和 Plot 两种方式。
 
 
-#### Summary Statistics
+### Summary Statistics
 
 - Measures of Location
 	- mean
@@ -449,26 +414,26 @@ pipeline, spark
 	- skewness，偏态，斜度
 	- kurtosis，峰度
 
-#### Plots
+### Plots
 
 - histogram， 分布
 - box plot ，盒图
 - 相关性分析。
 
 
-### Data Preparation
+## Data Preparation
 
 主要是做一些特征工程。选择最少的特征，并且保留足够的数据信息。 PCA是很重要的降维手段。
 
 处理 missing value、处理 outlier， 选择特征（添加新的特征）。
 
 
-### ML: Classification
+## ML: Classification
 
 主要是用一个分类算法，介绍相关的一些概念。 这些概念在别的课程都学了。这里稍微复习一下。
 
 
-#### DecisionTree Classifier算法相关
+### DecisionTree Classifier算法相关
 
 - 决策分割方法：  计算度量 impurity： gini？？这个细节上还不是很了解。
 - 一些算法参数： 分割深度， 节点上实例最少数量（防止过拟合）
@@ -476,7 +441,7 @@ pipeline, spark
 - post-pruning，一开始构建整个决策树，然后剪去不能改善 泛化误差的分支。 这种计算量很大，但是用的最多。
 
 
-#### 评估模型相关
+### 评估模型相关
 
 - 准确度： accuracy：  预测正确的（TP + TN ) / 所有测试样本数( TP + TN + FP + FN)
 - 精确度： precision：  实际P，预测P的（TP) / 所有预测为P的 (TP + FP)
@@ -498,14 +463,14 @@ F_\beta &= (1 + \beta^2) \frac{precision * recall}{ \beta^2 * precision + recall
 当然直观上，并不能直接看出来。所以一种方便的记忆方法就是 $\beta$ 与 precision 相乘，为了提高 precision的权重。 所以 $\beta> 1$， 则 precision重要。
 
 
-### ML: Regression
+## ML: Regression
 
 没什么好说的。回归方法。 使用 MSE 评估误差。
 
 线性回归。 没什么好说的。 主要利用各个特征，也可以添加 高次的特征。
 
 
-### ML: Cluster Analysis
+## ML: Cluster Analysis
 
 这里只介绍了 K-means 算法。回顾一下算法：
 
@@ -525,7 +490,7 @@ F_\beta &= (1 + \beta^2) \frac{precision * recall}{ \beta^2 * precision + recall
 3. 如何找到合适的 k？
 
 
-### ML: Association Analysis
+## ML: Association Analysis
 
 这个没见过。 是一个新的概念，而且用到的算法也没见过。但是感觉解决的问题很老套。
 
@@ -555,7 +520,7 @@ Association Analysis Algorithms 有 Apriori、FP Growth、Eclat，都没听过�
 对于这样的问题，算法解决的问题是如何最效率的找到所有的 有效的rule。
 
 
-## Graph Analytics for Big Data
+# Graph Analytics for Big Data
 
  摘要：
 
