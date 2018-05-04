@@ -35,20 +35,20 @@ DataNode是实际存储文件的节点。 其存储形式是 blocks。
 
 > Estimate minimum Namenode RAM size for HDFS with 1 PB capacity, block size 64 MB, average metadata size for each block is 300 B, replication factor is 3. Provide the formula for calculations and the result.
 
-计算方式：  1PB（1PB = 1024TB = 1024x1024GB) 容量， replication因子为 3，每个block大小为 64MB，则 最多包含：1 PB / (64 MB * 3)  个block的metadata信息。为什么这样计算？因为每个block有3份，但只需要一份metadata。所以总共需要的Namenode的RAM空间为： 1 PB / (64MB x 3) x 300B = 1024 * 1024 * 1024 / 64 / 3 * 300B = 1.6GB
+计算方式：  1PB（1PB = 1024TB = 1024x1024GB) 容量， replication因子为 3，每个block大小为 64MB，则 最多包含：1 PB / (64 MB * 3)  个block的metadata信息。为什么这样计算？因为每个block有3份，但只需要一份metadata。所以总共需要的Namenode的RAM空间为： 1 PB / (64MB x 3) x 300B = 1024 * 1024 * 1024 / 64 / 3 * 300B = 1.6GB
 
 参考 <https://www.cloudera.com/documentation/enterprise/5-10-x/topics/admin_nn_memory_config.html> 的计算方式有点区别。
 
 
 #### NameNode seek time以及 block读取时间
 
-读取一个block包括两步： 1. 在namenode里seek block的位置； 2. 读取block。
+读取一个block包括两步： 1. 在namenode里seek block的位置； 2. 读取block。
 
 一般要求seek block时间是读取一个block时间的 1%。可以通过这个标准（或要求）来决定block的大小。
 
 例如： SamSung940 PRO SSD:
 - reading speed  : 3.5GB/sec
-- Namenode RAM seek time:  0.2~0.8ms  , 1% 。
+- Namenode RAM seek time:  0.2~0.8ms  , 1% 。
 - 估计 block读取时间 ：  20~80ms
 - 估计 block大小：  3.5GB/sec * 20~80ms = 70MB ~ 280MB 之间。
 - 使用 block大小：128MB
