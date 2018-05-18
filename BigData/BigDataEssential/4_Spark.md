@@ -21,12 +21,12 @@
 - transformation： 没有side effect的计算。 side effect的意思是不对外界产生影响。
 - iterator： RDD的 transformation 并没有实际产生计算，也没有结果输出。它提供了一个iterator，可以访问partition的records， 这个iterator是建立在依赖关系parent的 iterator基础之上的。
 - actions: actions trigger computation and processing of the datasets
-- actions: actions 不一定在本地机器上运行
+- actions: actions 包括 transformation 都不一定在本地机器上运行
 - driver program： spark有一个 driver program和 SparkContext，用于执行程序，分布任务，监控任务在分布机器上的运行，收集结果。一些计算并不一定发生在local上，也可能是分布式的。所以写程序时要注意一些环境依赖。
 - narrow dependency 和 wide dependency。
 - join： 默认是inner join，两边都有的key，联结在一起。 outer join包括了只有一边有的key，另一边填充 null值。
 - Fault-tolerance in MapReduce： 两个关键点，一个是输入和输出都是可靠的；另一个是map和reducer的执行都是确定性的（deterministic）和 side effect free。
-- Fault-tolerance in Spark：同样的两个关键点。 
+- Fault-tolerance in Spark：同样的两个关键点。
 - Side effect： Side effect是指运行会对外界产生影响，比如写数据库。 Fault Tolerance要求 transformation计算没有side effect，无论哪个partition出现错误，都可以重启，反复计算而不影响外界。
 - idempotency: Actions是有side effect的，但是要求 idempotency （幂等），即无论多少次重复相同输入，输出结果不变。
 - deterministic： 确定性，无论多少次调用，都返回确定性的值。
