@@ -1,6 +1,8 @@
 
 ### Hadoop MapReduce
 
+一句话表示MapReduce： Mapper -> Shuffle & Sort -> Reducer。 分布式处理、混洗排序、归约计算结果。最重要的是，即使某个部分出现错误，可以重新计算而不影响全局。 容错性。
+
 MapReduce 框架是很重要的程序模型。
 
 参考

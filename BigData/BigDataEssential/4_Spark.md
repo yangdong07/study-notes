@@ -3,6 +3,8 @@
 
 ## Spark
 
+一句话表示Spark： Spark 定义RDD，将数据流映射到内存（可以是分布式的）。在RDD基础上可以进行类似SQL的操作。
+
 关于Spark的RDD概念，参考 <http://sharkdtu.com/posts/spark-rdd.html> 写的很清晰。
 
 
