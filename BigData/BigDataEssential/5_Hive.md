@@ -2,14 +2,14 @@
 
 ## Hive
 
-一句话表示Hive： Hive 定义 HQL（类似SQL的） 操作 HDFS文件数据。 Hive并不重复数据，而是组织管理数据。
+一句话表示Hive： Hive 定义 HQL（类似SQL的） 操作 HDFS文件数据。 Hive并不重复数据，而是组织管理数据。
 
 ### 基本概念
 
 
 - [Hive](https://hive.apache.org/), The Apache Hive ™ data warehouse software facilitates reading, writing, and managing large datasets residing in distributed storage using SQL. Structure can be projected onto data already in storage. A command line tool and JDBC driver are provided to connect users to Hive.
 
-- Hive vs. Pig ：二者都是基于 HDFS和MapReduce框架。  Hive是 declarative（what）声明式的， ~SQL。 Pig是 procedural（how），过程式的。 没有说可以解决所有问题的方案。 视问题使用，选择合适的解决方案。现在看来， Hive 比 Pig流行一些。
+- Hive vs. Pig ：二者都是基于 HDFS和MapReduce框架。  Hive是 declarative（what）声明式的， ~SQL。 Pig是 procedural（how），过程式的。 没有说可以解决所有问题的方案。 视问题使用，选择合适的解决方案。现在看来， Hive 比 Pig流行一些。
 
 - 问题域： 一个常见的大数据处理场景是 处理访问日志(web-service access logs)，包括了用户的访问记录，可以分析用户的分布、热度等等信息。
 
@@ -25,7 +25,7 @@
     - use subqueries
 
 - DDL: Data Definition Language. 我们说 Language，是一种符号概念，某个符号表示什么意思。 数据定义语言说明了数据库系统所使用的存储结构和访问方式。比如定义约束。
-- DML: Data Manipulation Language. 数据操纵语言，是一套描述如何访问和操纵数据的语言。
+- DML: Data Manipulation Language. 数据操纵语言，是一套描述如何访问和操纵数据的语言。
     - 过程式 DML（procedural DML）：要求用户指定需要什么数据以及如何获得这些数据
     - 声明式 DML（declarative DML）： 要求用户指定需要什么数据，而不指明如何获得这些数据。
 
@@ -36,14 +36,14 @@
 - Hive Metastore: Hive 存储的是数据的 metadata （定义结构）。**实际数据在HDFS中**，是分布式的。注意Namenode记录的meta信息只是文件级别的。 Hive存储的是数据（内容）级别的meta信息。
 
 - Database： 如果不指名 database，则使用 'default' 作为database
-- Create Table： 就像普通创建表一样，定义数据结构。同时要注明数据位置： LOACTION
+- Create Table： 就像普通创建表一样，定义数据结构。同时要注明数据位置： LOACTION
 - Table Types
     - Managed table： hive负责管理数据。 **如果drop table， 则会把数据也删掉！！！！**
-    - External table： 没有这些负担！
+    - External table： 没有这些负担！
 - Delimiters: 不是常见的 '\t'， 而是不常见的 '\001'（'^A')，
     - '\001', '^A', FIELDS分隔符
     - '\002', '^B', COLLECTIONS 分隔符， array结构各元素分隔符，或者struct的分隔符
-    - '\003', '^C', MAP 键值分隔符， 字典键与值之间的分隔符, 键值对之间用 '^B'
+    - '\003', '^C', MAP 键值分隔符， 字典键与值之间的分隔符, 键值对之间用 '^B'
     - '\n'， 行分隔符
     - 如果数据格式不是这样，需要在DDL中指明 delimiter
 
@@ -86,25 +86,25 @@ SELECT * FROM xxx WHERE ...
 ```sql
 FROM employees
 INSERT OVERWRITE [LOCAL] DIRECTORY '/tmp/ca_employees'
-SELECT *  
+SELECT *  
 WHERE state = 'CA'
 INSERT OVERWRITE [LOCAL] DIRECTORY '/tmp/ny_employees'
-SELECT *  
+SELECT *  
 WHERE state = 'NY'
 ```
 
-- 换个姿势操作，甚至可以同时创建多个table， 注意这里实际的HDFS数据并没有移动、复制。创建的只是描述结构。
+- 换个姿势操作，甚至可以同时创建多个table， 注意这里实际的HDFS数据并没有移动、复制。创建的只是描述结构。
 ```sql
 FROM raw_table
 INSERT OVERWRITE TABLE ca_employees
-SELECT *  
+SELECT *  
 WHERE state = 'CA'
 INSERT OVERWRITE TABLE ny_employees
-SELECT *  
+SELECT *  
 WHERE state = 'NY'
 ```
 
-- DDL(CTAS)： Create Table As Select。 这里也没有产生实际的数据复制、移动。 LOCATION是相同的。似乎是封装了一层。
+- DDL(CTAS)： Create Table As Select。 这里也没有产生实际的数据复制、移动。 LOCATION是相同的。似乎是封装了一层。
 ```sql
 CREATE TABLE ca_employees
 AS SELECT *
@@ -120,7 +120,7 @@ WHERE state = 'CA'
     - join:   map side / reduce side
     - order by/ sort by  : reduce
 
-- ORDER BY vs. SORT BY，  ORDER BY 是全排序， 比较耗费资源。 SORT BY 是文件内排序。是 partial sort。
+- ORDER BY vs. SORT BY，  ORDER BY 是全排序， 比较耗费资源。 SORT BY 是文件内排序。是 partial sort。
 
 
 ### Regex SerDe
@@ -187,10 +187,10 @@ VIEW 有一些缺点： 它是只读的，并且建立在已有TABLE之上。如
 - match vs. search ， 前者从头匹配，后者搜索第一个匹配
 - `re.IGNORECASE`
 - Capture Group， 用 `()` 捕获组
-- group vs. groups 参考 https://docs.python.org/3/library/re.html#re.match.group。 group 是所有匹配的，包括组。 group(0) 是匹配的全部字符； group(1) 是第一个捕获的组； groups 则仅包括所有捕获的组。所以 group比groups还多一些。
-- Non-Capturing Group 不要捕获的组 :  `(?:...)`，不会出现在 group或者groups里。
+- group vs. groups 参考 https://docs.python.org/3/library/re.html#re.match.group。 group 是所有匹配的，包括组。 group(0) 是匹配的全部字符； group(1) 是第一个捕获的组； groups 则仅包括所有捕获的组。所以 group比groups还多一些。
+- Non-Capturing Group 不要捕获的组 :  `(?:...)`，不会出现在 group或者groups里。
 - `[]`里面表示字符选项，例如 `[a-zA-Z0-9_]`
-- `*+?` 分别表示 0或多个； 1或多个； 0或1个。
+- `*+?` 分别表示 0或多个； 1或多个； 0或1个。
 - `{n, m}` 表示 n到m个。
 
 - metacharacters:  `\d` 数字
@@ -203,12 +203,12 @@ VIEW 有一些缺点： 它是只读的，并且建立在已有TABLE之上。如
 ### Hive Functions
 
 - Operators
-- UDFs: User Defined Functions,  1: 1, 类似于 MAP，一对一映射
+- UDFs: User Defined Functions,  1: 1, 类似于 MAP，一对一映射
 - UDAFs: User Defined Aggregate Functions,  n: 1， REDUCE， 聚合操作
 - UDTFs: User Defined Table-generating Functions,  1: n，  产生表的操作 （例如类似flatMap这种）
 
 
-不清楚函数功能：
+不清楚函数功能：
 
 - `describe function xxx;`
 - `describe function extended xxx;` 详细
@@ -222,7 +222,7 @@ VIEW 有一些缺点： 它是只读的，并且建立在已有TABLE之上。如
 
 `hive > add jar /path/to/lib.jar;`  place into distributed cache
 
-如果要用自定义的 UD[.\*]F，需要创建临时函数，例如
+如果要用自定义的 UD[.\*]F，需要创建临时函数，例如
 
 ```
 hive> add jar /path/to/lib.jar
@@ -272,7 +272,7 @@ FROM pageAds LATERAL VIEW explode(adid_list) adTable AS adid;
 |"contact_page"| 5
 
 
-可以用 EXPLAIN 命令观察 HDL语句是如何分解成 stages的。
+可以用 EXPLAIN 命令观察 HDL语句是如何分解成 stages的。
 
 
 ## Hive Streaming
@@ -286,14 +286,14 @@ USING "/bin/cat"
 AS (new_A STRING, new_B DOUBLE)
 ```
 
-就是将 `column_A`  `column_B` 经过脚本命令，变成新的列。
+就是将 `column_A`  `column_B` 经过脚本命令，变成新的列。
 
 
 例如之前的 word count任务：
 
 1. map
 2. shuffle & sort， 以word为key
-3. reducer
+3. reducer
 
 ```sql
 FROM (
@@ -307,7 +307,7 @@ USING "python reducer.py"
 AS word, counts
 ```
 
-注意这里面的 `DISTRIBUTE BY word SORT BY word` 做了 shuffle-> partition, sort in partition的工作。 也可以用 `CLUSTER BY` 替代。 但是注意不要直接用 `MAP` 和 `REDUCE`命令。 hive支持，但是这样做很危险。不明白为什么。
+注意这里面的 `DISTRIBUTE BY word SORT BY word` 做了 shuffle-> partition, sort in partition的工作。 也可以用 `CLUSTER BY` 替代。 但是注意不要直接用 `MAP` 和 `REDUCE`命令。 hive支持，但是这样做很危险。不明白为什么。
 
 将 py文件添加到hive（Distributed Cache）：
 
@@ -331,7 +331,7 @@ FROM transactions
 SORT BY customerID, transactionID;
 ```
 
-上面这个操作，就是按照 customerID 进行分区， 然后在这个分区上按照 transactionID排序， 然后对change做累加操作。
+上面这个操作，就是按照 customerID 进行分区， 然后在这个分区上按照 transactionID排序， 然后对change做累加操作。
 
 最后注意这个 SORT BY 是在分区内部的。  括号里面的ORDER BY也是分区内部的。
 
@@ -341,17 +341,17 @@ SORT BY customerID, transactionID;
 
 ### Partitioning
 
-问题： 如果一种操作需要对全部HDFS文件进行访问，这样会非常耗费资源，尽量避免这样做
+问题： 如果一种操作需要对全部HDFS文件进行访问，这样会非常耗费资源，尽量避免这样做
 
 Partitioning是一种方法。
 
 关于partition操作，参考 <https://resources.zaloni.com/blog/partitioning-in-hive> 写的比较多，但是都提到了。
 
-有几个点注意一下：
+有几个点注意一下：
 
-1. partition 是一种真实的数据组织方式： 将文件按照某些column的值分别存放。 例如按照年月日： `/year/month/day/file` 存放。
+1. partition 是一种真实的数据组织方式： 将文件按照某些column的值分别存放。 例如按照年月日： `/year/month/day/file` 存放。
 2. 可以对partition改名。
-3. 一个问题是： partitioned操作什么时候创建路径和文件？
+3. 一个问题是： partitioned操作什么时候创建路径和文件？
 
 ```sql
 FROM raw_access_log
@@ -385,7 +385,7 @@ SELECT ip, ..., year, month, day
 - ORDER BY： 全局排序，放到一个reducer里。
 - SORT BY： 在partition内部排序，局部排序。 但是全局的顺序不一定。每个partition的范围有重叠。
 - DISTRIBUTE BY： 每个partition的范围没有重叠， 但是内部是无序的。
-- CLUSTER BY： 每个partition的范围没有重叠，且内部有序，这就等同于 DISTRIBUTE BY + SORT BY
+- CLUSTER BY： 每个partition的范围没有重叠，且内部有序，这就等同于 DISTRIBUTE BY + SORT BY
 
 
 ### Bucketing and Sampling
@@ -418,7 +418,7 @@ SELECT userid, firstname, lastname WHERE ds='2009-02-25';
 
 
 ### Joins
-
+
 也没怎么看懂。 这里主要是map side join。 两个点：
 
 1. 数据分 bucket， 按照bucket join。
@@ -428,21 +428,21 @@ SELECT userid, firstname, lastname WHERE ds='2009-02-25';
 
 完全没看懂。hive可以支持DataSkew。定义某个 key 是 data skew的。
 
-通常的处理方式（之前学过）： 比如有大量null值， 在后面附上随机数字，会进入到随机分区中去，这样就均衡了数据分布。
+通常的处理方式（之前学过）： 比如有大量null值， 在后面附上随机数字，会进入到随机分区中去，这样就均衡了数据分布。
 
 
 ### File Formats and Compression
 
-这里主要讲了一下 Record Columnar File （RCFile）。 通常数据都是按行排列的。但是也可以用 列表示。这种方式相同数据类型的数据都放在一起，非常便于压缩。
+这里主要讲了一下 Record Columnar File （RCFile）。 通常数据都是按行排列的。但是也可以用 列表示。这种方式相同数据类型的数据都放在一起，非常便于压缩。
 
-例如： 日期， 其实可以用 timestamp表示，每个timestamp如果用字符，需要 10个bytes； 如果用数字，只需要 4个bytes； 甚至还可以用 差值，比如以表第一个日期为初始值，后面都是此基础之上的差值，则可以用一个bytes！
+例如： 日期， 其实可以用 timestamp表示，每个timestamp如果用字符，需要 10个bytes； 如果用数字，只需要 4个bytes； 甚至还可以用 差值，比如以表第一个日期为初始值，后面都是此基础之上的差值，则可以用一个bytes！
 
 
 RCFile 的设计目标（Design Goals）
 
-1. fast data loading，  快速数据加载？？
-2. fast query processing， 有的查询只按列进行，所以一列数据放在一起就非常方便。
-3. highly efficient storage space utilization， 这个能有效减少存储空间。
+1. fast data loading，  快速数据加载？？
+2. fast query processing， 有的查询只按列进行，所以一列数据放在一起就非常方便。
+3. highly efficient storage space utilization， 这个能有效减少存储空间。
 4. strong adaptivity to highly dynamic workload patterns
 
 
@@ -478,7 +478,7 @@ SORTED AS orc
 reporter:status:Reading 	
 <row Id="371392" PostTypeId="1" AcceptedAnswerId="372312" CreationDate="2008-12-16T14:08:55.857" Score="2" ViewCount="11027" Body="..." Tags="..." AnswerCount="1" CommentCount="0" FavoriteCount="4" />
 ```
-一种类似于 tag， 或者xml文本的格式。
+一种类似于 tag， 或者xml文本的格式。
 
 #### 1. 准备database
 查看表
@@ -519,11 +519,11 @@ TBLPROPERTIES ("skip.header.line.count"="1");
 SELECT * from posts_sample_external LIMIT 10;
 ```
 
-这里用到 `RegexSerDe` 来解析文件的每一行。 用到的正则表达式可以在 <https://regex101.com/r/l71G6B/1/> 进行测试。 这里注意 `\` 需要用 `\\`表示。 所以 `\d`需要写成 `\\d`
+这里用到 `RegexSerDe` 来解析文件的每一行。 用到的正则表达式可以在 <https://regex101.com/r/l71G6B/1/> 进行测试。 这里注意 `\` 需要用 `\\`表示。 所以 `\d`需要写成 `\\d`
 
 External Table 可以随意删除而不影响原始数据。
 
-#### 3. 创建 Managed Partitioned 表，并注入数据
+#### 3. 创建 Managed Partitioned 表，并注入数据
 
 ```sql
 USE stackoverflow_;
@@ -550,7 +550,7 @@ SELECT id, year, month;
 SELECT * from posts_sample LIMIT 10;
 ```
 
-注意 Partitioned表的创建方法。 这是 Managed Table，所以Drop掉之后，数据也会跟着删掉。 注意 Partitioned Table的字段，只有一个 `id`。 其他字段（year、month）是以目录树的形式分区。
+注意 Partitioned表的创建方法。 这是 Managed Table，所以Drop掉之后，数据也会跟着删掉。 注意 Partitioned Table的字段，只有一个 `id`。 其他字段（year、month）是以目录树的形式分区。
 
 可以从 `posts_sample_external` 查询结果注入数据。 这些查询操作会用到 MapReduce过程。
 
@@ -584,7 +584,7 @@ WHERE rowid='3';
 
 折腾了半天不知道原因，最后一步一步测试，发现是用户权限不同： 测试的时候用户是 fucking `javyan`， 提交的时候用户是 fucking `hjudge`。 提交创建 Managed Table的时候， Location的权限有问题， 是写不进去数据的。 所以最后的查询没有输出。
 
-把 Location改成 `'/user/hjudge/posts_sample'` 就过了， fuck fuck fuck!
+把 Location改成 `'/user/hjudge/posts_sample'` 就过了， fuck fuck fuck!
 
 
 ### Task2

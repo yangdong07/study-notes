@@ -531,9 +531,9 @@ Association Analysis Algorithms 有 Apriori、FP Growth、Eclat，都没听过�
 - Valence表示数据的相关性（顶点的相关性）： 想象一个关系网（Social Media），随着边的增加，关系会越来越复杂： 或者会形成一个个团体。
 
 
-## Graph Analytics
+## Graph Analytics
 
-一些分析手段
+一些分析手段
 
 
 
