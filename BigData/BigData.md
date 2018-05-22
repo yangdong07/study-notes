@@ -524,8 +524,16 @@ Association Analysis Algorithms 有 Apriori、FP Growth、Eclat，都没听过�
 
  摘要：
 
-1. Graph的表示形式： 顶点、矩阵（表示边）； 顶点、边集合。
+- Graph的表示形式： 顶点、矩阵（表示边）； 顶点、边集合。
+- Volume表示 顶点、边的大小。
+- Velocity表示 边增长的速度： 想象一个关系网， 关系的增加速度
+- Variety表示数据来源复杂，各种图有不同的意义，多样性。
+- Valence表示数据的相关性（顶点的相关性）： 想象一个关系网（Social Media），随着边的增加，关系会越来越复杂： 或者会形成一个个团体。
 
+
+## Graph Analytics
+
+一些分析手段
 
 
 
