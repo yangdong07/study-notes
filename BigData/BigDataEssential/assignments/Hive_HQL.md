@@ -150,3 +150,99 @@ WHERE rowid='3';
 4. 2016 top 10 left join 2019
 
 直接做。
+
+
+
+#### 参考 Eugene 的做法，一个语句搞定：
+
+```python
+%%writefile query.hql
+
+USE stackoverflow_;
+
+WITH tags_rank AS (
+    SELECT
+        year,
+        lower(tag) as tag,
+        COUNT(DISTINCT id) as popularity,
+        RANK() OVER (PARTITION by year ORDER BY COUNT(DISTINCT id) DESC) as rank
+    FROM posts
+    LATERAL VIEW explode(tags) explode_tags as tag
+    WHERE post_type_id=1 AND tags IS NOT NULL AND year IN (2009, 2016)
+    GROUP BY year, lower(tag))
+SELECT a.tag, a.rank, b.rank, a.popularity, b.popularity
+FROM tags_rank a
+LEFT OUTER JOIN
+tags_rank b ON (a.tag=b.tag AND b.year=2009)
+WHERE a.year=2016
+ORDER BY a.popularity DESC
+LIMIT 10;
+```
+
+大致思想： 
+
+1. 第一步先取出来2009， 和2016 的数据，展开tag。可以发现在用LATERAL VIEW的时候，是可以做筛选的和 GROUP的，只不过是放在后面。
+2. 第二步就是用这个table， 自己与自己 LEFT OUTER JOIN。非常赞。
+
+测试与提交的输出不一样。 提交之后的输出是：
+
+```
+=== Task's top output ===
+javascript	1	6	284841	18750
+java	2	2	217005	24099
+android	3	65	183269	1997
+php	4	4	174988	20541
+python	5	10	166779	12944
+c#	6	1	161198	46143
+html	7	12	123863	9375
+jquery	8	8	121558	14513
+ios	9	290	94659	511
+css	10	19	84251	6798
+```
+
+### Task3
+
+要求，这次是两个表：posts 和users
+
+Calculate number of questions and answers depending on users' age. Use аge from 'users' table, filter out users if their age is undefined. Output format:
+`age <tab> number of questions <tab> number of answers`
+
+Output all ages. Order by age, increment.
+
+Hint. To simplify your code and reduce the quantity of MapReduce jobs produced by the query, use IF clause.
+
+ 输出所有年龄的问题数量和回答数量
+
+posts 和 users 可以通过 user id 联系起来， 做成一个 ： `id, post_type_id, age` 的表。 计数的时候，可以用 IF。
+
+```sql
+%%writefile query.hql
+
+USE stackoverflow_;
+
+SELECT
+    users.age,
+    SUM(IF(post_type_id=1, 1, 0)),
+    SUM(IF(post_type_id=2, 1, 0))
+FROM posts
+JOIN users ON (posts.owner_user_id=users.id)
+WHERE age IS NOT NULL
+GROUP BY age
+ORDER BY age;
+
+```
+
+输出：
+```
+=== Task's top output ===
+13	799	271
+14	1497	3382
+15	4399	4996
+16	7886	11746
+17	12932	19209
+18	17923	24105
+19	28560	37042
+20	41498	56715
+21	63154	80272
+22	87962	127698
+```

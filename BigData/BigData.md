@@ -535,6 +535,17 @@ Association Analysis Algorithms 有 Apriori、FP Growth、Eclat，都没听过�
 
 一些分析手段
 
+### Path Analytics
+
+- Walk：任意的点、边、点、边序列（an alternating sequence of vertices and edges over a graph）
+- Path：Walk，点不重复（除了第一个和最后一个）
+- Cycle：Path， 点 $n \ge 3$， 第一个和最后一个点重合。
+- Acyclic： 没有环。 （DAG，有向无环图）
+- Trail：Walk，没有重复边。
+- Reachability： 可到达。存在一个path。
+- Diameter of Graph： Maximum pairwise distance between nodes
+
+Walk 可以理解成随机游走，但是是按照边的指向。
 
 
 
