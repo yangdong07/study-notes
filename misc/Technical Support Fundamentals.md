@@ -74,3 +74,84 @@
 - USB type C
 - DVI 接口
 - HDMI: audio and video
+
+
+### BIOS
+
+- BIOS, Basic Input Output Service
+- BIOS程序储存在一个 ROM chip
+- UEFI, Unified Extensible Firmware Interface
+- POST, Power-On Self Test， 上电自检，检查所有可用硬件
+- beep code， 如果自检正常，1次beep； 其他beep表示错误，可以查看手册，定位错误。
+
+
+### 组装
+
+- 防静电手腕带，防止人体静电损害贵重器件
+- CPU
+    - thermal paste， 导热硅胶
+    - heat sink， 热传导
+    - CPU fan， 散热
+
+
+## Operating System
+
+- Windows，现在PC多指 Windows操作系统
+- Mac OS
+- Linux， 开源操作系统（distributions）
+    - Ubuntu
+    - RedHat
+    - CentOS
+
+
+### Kernel Space/ User Space
+
+- User Space，用户应用程序
+    - Applications
+- Kernel Space 管理操作硬件资源
+    - File Manager
+    - Process Manager
+    - Memory Manager
+    - I/O Manager
+
+### Files and File System
+
+不同OS 有不同文件系统，用于管理文件。
+
+- File Handling：
+    - Data
+    - Metadata
+    - File System
+
+- Windows： NTFS / ReFS
+- Mac： APFS
+- Linux： ext4
+
+### Memory Management
+
+内存管理
+
+- programs： 分成 pages
+- pages存储在Virtual Memory中，这是结合 硬盘和实际内存的一个概念。
+- 实际运行某一个page的程序
+
+### Process Management
+
+进程管理： 
+
+- Time Slice，时间分片。操作系统会将CPU计算时间分片，给不同进程使用。
+
+
+### I/O Management
+
+kernel 还要管理 Input/Output devices 以及 devices之间的通信。
+
+### Logs
+
+注意观察日志。
+
+### Boot 过程
+
+1. 电源开关
+2. BIOS/UEFI POST， 上电自检
+3. Boot Device： Bootloader，一个小程序，加载OS。
