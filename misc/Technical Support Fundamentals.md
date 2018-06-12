@@ -155,3 +155,21 @@ kernel 还要管理 Input/Output devices 以及 devices之间的通信。
 1. 电源开关
 2. BIOS/UEFI POST， 上电自检
 3. Boot Device： Bootloader，一个小程序，加载OS。
+
+### 作业练习
+
+使用 Google Cloud Platform， 废了九牛二虎之力。。因为网太慢，翻墙不容易。
+
+遇到的问题：
+
+1. 用自己的google账号登录GCP，结果用其他账号google也管我要电话号码。实际上quiwklab是个第三方平台，可以自动在GCP上创建VM，进行实验。 如果跳转登录不行，直接去GCP用quiwklab提供的用户名密码登录即可。
+2. windows 是 RDP远程桌面登录，卡的要死。。还好IP不用翻墙。
+3. linux 是 SSH登录， easy。
+
+**主要原因是用了路由器做VPN， google无法识别device，所以才要求verify。换成mac用vpn连接就好使了！！！！**
+
+有点玄学了。。。，满足以下几个条件：
+
+1. 选择 hongkong4的 vpn
+2. 用一个新的person，在chrome上登录coursera 跳转到 GCP（无历史浏览记录）
+3. 然后输入用户名、密码，这样似乎才不要求verify。。
