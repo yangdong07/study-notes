@@ -156,7 +156,7 @@ VCoreSeconds: 2703 sec 
 - crs902_1，检查格式：格式错误
 - crs902_2，检查第1行 和第10行的tag： 错误
 - crs902_3，不知道检查什么，但是是对的（根据上下文推理，可以知道应该是检查 rank in 2016）
-- crs902_4，检查第1行和第10行 rank in 2009： 错误
+- crs902_4，检查第1行和第10行 rank in 2009： 错误
 - crs902_5，检查第1行和第10行 popularity in 2016 是错误的
 - crs902_6，检查第1行和第10行 popularity in 2009 是错误的
 - crs902_7，检查所有tags， 似乎是C++行，最后一行错误。
@@ -216,9 +216,9 @@ VCoreSeconds: 561 sec
 错误：
 - res1_5， All jobs but one should has at least 1 reducer， 只有一个需要至少一个 reducer。意思是其他都不需要？
 - crs902_1，检查格式：格式仍然错误，为什么？
-- crs902_2，检查第1行 和第10行的tag： 正确了！！！ 果然还是用 100。题目都没说清楚，真是服了。
+- crs902_2，检查第1行 和第10行的tag： 正确了！！！ 果然还是用 100。题目都没说清楚，真是服了。
 - crs902_3，不知道检查什么，但是是对的（根据上下文推理，可以知道应该是检查 rank in 2016）
-- crs902_4，检查第1行和第10行 rank in 2009： 肯定是错误的
+- crs902_4，检查第1行和第10行 rank in 2009： 肯定是错误的
 - crs902_5，检查第1行和第10行 popularity in 2016 是错误的
 - crs902_6，检查第1行和第10行 popularity in 2009 是错误的
 - crs902_7，检查所有tags， 通过了，说明这个所有tags是正确的！！！！！
@@ -227,7 +227,7 @@ VCoreSeconds: 561 sec
 
 crs902_7 检查所有tags是正确的，这就说明 用stackexchange100 而不是用 stackexchange1000。
 
-res1_5 问题： 前面partition 都只是map。 UDAF似乎也需要 reducer。 JOIN操作肯定要用到 reducer。 这个问题最后再说。
+res1_5 问题： 前面partition 都只是map。 UDAF似乎也需要 reducer。 JOIN操作肯定要用到 reducer。 这个问题最后再说。
 
 做一些改动，试图解决 rank in 2009问题
 
@@ -278,7 +278,7 @@ the tags and rank in 2016 is right, but all the others is wrong, the popularity 
 
 
 错误
- - crs902_4，检查第1行和第10行 rank in 2009： 肯定是错误的
+ - crs902_4，检查第1行和第10行 rank in 2009： 肯定是错误的
  - crs902_5，检查第1行和第10行 popularity in 2016 是错误的
  - crs902_6，检查第1行和第10行 popularity in 2009 是错误的
 

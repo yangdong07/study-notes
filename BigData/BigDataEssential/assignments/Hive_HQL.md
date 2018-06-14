@@ -179,9 +179,9 @@ ORDER BY a.popularity DESC
 LIMIT 10;
 ```
 
-大致思想： 
+大致思想： 
 
-1. 第一步先取出来2009， 和2016 的数据，展开tag。可以发现在用LATERAL VIEW的时候，是可以做筛选的和 GROUP的，只不过是放在后面。
+1. 第一步先取出来2009， 和2016 的数据，展开tag。可以发现在用LATERAL VIEW的时候，是可以做筛选的和 GROUP的，只不过是放在后面。
 2. 第二步就是用这个table， 自己与自己 LEFT OUTER JOIN。非常赞。
 
 测试与提交的输出不一样。 提交之后的输出是：
@@ -200,9 +200,9 @@ ios	9	290	94659	511
 css	10	19	84251	6798
 ```
 
-### Task3
+### Task3
 
-要求，这次是两个表：posts 和users
+要求，这次是两个表：posts 和users
 
 Calculate number of questions and answers depending on users' age. Use аge from 'users' table, filter out users if their age is undefined. Output format:
 `age <tab> number of questions <tab> number of answers`
@@ -213,7 +213,7 @@ Hint. To simplify your code and reduce the quantity of MapReduce jobs produced b
 
  输出所有年龄的问题数量和回答数量
 
-posts 和 users 可以通过 user id 联系起来， 做成一个 ： `id, post_type_id, age` 的表。 计数的时候，可以用 IF。
+posts 和 users 可以通过 user id 联系起来， 做成一个 ： `id, post_type_id, age` 的表。 计数的时候，可以用 IF。
 
 ```sql
 %%writefile query.hql
