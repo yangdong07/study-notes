@@ -319,9 +319,9 @@ Forms 主要包括：
 > A picture is worth a thousand words
 
 
-`<img>` 是一个标签。有一些 class样式。 比如 `img-thumbnail`
+`<img>` 是一个标签。有一些 class样式。 比如 `img-thumbnail`
 
-Media 参考 ： <https://getbootstrap.com/docs/4.1/layout/media-object/>
+Media 参考 ： <https://getbootstrap.com/docs/4.1/layout/media-object/>
 
 media 是一种 layout， 可以添置图片、媒体信息之类的。
 
@@ -335,13 +335,13 @@ media 是一种 layout， 可以添置图片、媒体信息之类的。
 
 - JavaScript： 最基础的部分，可以很灵活的做很多事情
 - JQuery： 封装 JavaScript 的一些基本操作。
-- Bootstrap JS Component：  基于JQuery。不用写 js 代码，使用 javascript功能。  `data-*` 类
+- Bootstrap JS Component：  基于JQuery。不用写 js 代码，使用 javascript功能。  `data-*` 类
 
 
 两个重要属性：
 
-- `data-toggle`， 点击切换的动作类型（实际上是调用的函数），例如 collapse、tab 之类
-- `data-target`， 动作目标，一般是 id。
+- `data-toggle`， 点击切换的动作类型（实际上是调用的函数），例如 collapse、tab 之类
+- `data-target`， 动作目标，一般是 id。
 
 ### Navigation: Tabs/Pills
 
@@ -414,7 +414,7 @@ Tooltips 最轻量级
 
 ### JQuery
 
-- `$` 表示调用 jquery库
+- `$` 表示调用 jquery库
 - `$(selector)` ，选择器，选择 DOM元素
     - tag：  `a`
     - attribute： `[role='carousel']`
@@ -434,7 +434,7 @@ Tooltips 最轻量级
  一种写 CSS文件更简单的方式
 
 - 可以定义变量： 使某些数值有名称。例如颜色、高度。
-- 可以嵌套： 不像 CSS 所有都是同级、平铺，无层次感。
+- 可以嵌套： 不像 CSS 所有都是同级、平铺，无层次感。
 - 可以引用（mixins），复用。
 - 可以进行数学计算。
 
@@ -450,7 +450,7 @@ Tooltips 最轻量级
 - `npm install node-sass --save-dev`
 - `node-sass -o css/ css/`， 处理所有 scss 文件。
 
-#### Reference
+#### Reference
 
 - [Less官网](http://lesscss.org/)
 - [Sass Basics](http://sass-lang.com/guide)
@@ -464,8 +464,8 @@ Tooltips 最轻量级
 
 ### CSS Tasks
 
-- Compiling Sass or Less into CSS3
-- Autoprefixer， 自动添加前缀？
+- Compiling Sass or Less into CSS3
+- Autoprefixer， 自动添加前缀？
 - Minification： 去掉冗余字符（空白行、注释等等）
 - Concatenation
 
