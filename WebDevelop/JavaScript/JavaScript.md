@@ -929,7 +929,7 @@ let rabbit = new Rabbit("White Rabbit"); //  rabbit.__proto__ == animal
 alert( rabbit.eats ); // true
 ```
 
-解释一下： 
+解释一下：
 
 1. 每个 function 都有一个默认的 `F.prototype = { constructor: F }`， 与对象的还不一样。 当然， 这个 prototype 可以被修改。
 2. 如果用 `new F()` 创建对象，会将 对象的 `__proto__` 设置为 `F.prototype`
@@ -1287,7 +1287,7 @@ let rabbit = new Rabbit("White Rabbit", 10); // Error: this is not defined.
 
 如果将 `super` 理解成 `this.__proto__` 或者 ` ParentClass.prototype` 或者 `Object.getPrototypeOf(this)`（这三个都是一样的东西） ，会有一些问题：
 
-#### `this` is dynamic
+#### `this` is context
 
 ```js
 let animal = {
@@ -1454,6 +1454,65 @@ ChildClass.__proto__ = ParentClass
     - `obj.__proto__.__proto__ === B.prototype`， 可以 “继承” 一般方法
 
 
+### Class checking: "instanceof"
+
+The algorithm of `obj instanceof Class` works roughly as follows:
+
+1. `Class` 如果有静态方法： `[Symbol.hasInstance]`
+
+```js
+// assume anything that canEat is an animal
+class Animal {
+  static [Symbol.hasInstance](obj) {
+    if (obj.canEat) return true;
+  }
+}
+
+let obj = { canEat: true };
+alert(obj instanceof Animal); // true: Animal[Symbol.hasInstance](obj) is called
+```
+
+这种视角很有意思： 它检查对象，如果实现了什么方法，就认为是自己的一个实例。。。。
+
+2. 如果没有 `[Symbol.hasInstance]`， 则检查 `obj` 的 prototype chain 是否就是 `Class.prototype`：
+
+```js
+obj.__proto__ === Class.prototype
+obj.__proto__.__proto__ === Class.prototype
+obj.__proto__.__proto__.__proto__ === Class.prototype
+...
+```
+
+### Mixins
+
+举个复杂点的例子：
+
+```js
+let sayMixin = {
+  say(phrase) { alert(phrase); }
+};
+
+let sayHiMixin = {
+  __proto__: sayMixin, // (or we could use Object.create to set the prototype here)
+  sayHi() { super.say(`Hello ${this.name}`); }, // [[HomeObject]] === sayHiMixin
+  sayBye() { super.say(`Bye ${this.name}`); } // [[HomeObject]] === sayHiMixin
+};
+
+class User {
+  constructor(name) { this.name = name; }
+}
+
+// copy the methods, use Mixin
+Object.assign(User.prototype, sayHiMixin);
+
+// now User can say hi
+new User("Dude").sayHi(); // Hello Dude!
+```
+
+注意几点：
+
+1. `Object.assign(User.prototype, sayHiMixin)`， 就是使用Mixin的方法： 在 prototype 里混入 sayHiMixin 中的方法
+2. 注意在 Minxin 中的 方法的 `[[HomeObject]]` 以及 super调用。
 
 
 

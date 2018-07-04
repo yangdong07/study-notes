@@ -526,198 +526,50 @@ ViewChild 也是一个 Angular 常用的概念
 ### TODO: Parent and children communicate via a service
 
 
-## Promise
+## Observables & RxJS
 
-> ES6: ECMAScript is a standard. While JavaScript is the most popular implementation of that standard. JavaScript implements ECMAScript and builds on top of it.
+关于 Observable 的概念见 [JavaScript 专题](../JavaScript/JavaScriptAdvanced.md#observable)
 
-参考 <https://javascript.info/promise-basics> 解释的非常好。
+跳出那堆复杂说明，从表现上看 Observable 就是在 publishers（data source） 和 subscribers（observers）之间传递消息。 Observable 通过 subscribe 函数将二者联系起来。
 
-如果想看中文，还有中文版的： https://github.com/iliakan/javascript-tutorial-cn/blob/master/6-async/02-promise-basics/article.md
+### Observables
 
-为什么我有一种 中文说明 更好的感觉。。
+Observables provide support for passing messages between **publishers** and **subscribers** in your application. Observables offer significant benefits over other techniques for event handling, asynchronous programming, and handling multiple values.
 
-### new Promise
-
-创建一个 Promise 对象：
-
-```js
-new Promise( /* executor */ function(resolve, reject) { ... } );
-```
-
-这是创建 Promise对象的标准形式。 注意几个方面：
-
-1. 创建 Promise 对象的时候， executor 函数是立即执行的。 之前我一直以为是异步执行的。 注意一点： 之后对 promise 的使用没有在任何地方 显式调用这个 函数。
-2. resolve 和 reject 是 JavaScript 引擎自带的。我们不需要专门创建它们。 之前我一直不知道这两个东西从哪里冒出来的。
-
-Promise 对象的状态和结果 （[States and Fates/Results](https://github.com/domenic/promises-unwrapping/blob/master/docs/states-and-fates.md)）
-
-创建的 Promise 对象有两个内部 性质（property）
-
-- **state** — initially “pending”, then changes to either “fulfilled” or “rejected”,
-- **result** — an arbitrary value of your choosing, initially undefined.
-
-A Promise is in one of these states:
-
-- **pending**， initial state, neither fulfilled nor rejected.
-- **fulfilled**， meaning that the operation completed successfully.
-- **rejected**， meaning that the operation failed.
-
-这些状态是互斥的（mutually exclusive states)
-
-> We say that a promise is settled if it is not pending, i.e. if it is either fulfilled or rejected. Being settled is not a state, just a linguistic convenience.
-
-下面看 resolve 和 reject 这两个函数做了什么事情：
-
-- `resolve(value)` — to indicate that the job finished successfully:
-    - sets **state** to `"fulfilled"`,
-    - sets **result** to `value`.
-- `reject(error)` — to indicate that an error occurred:
-    - sets **state** to `"rejected"`,
-    - sets **result** to `error`.
+- `Observable.of(...items)` — Returns an Observable instance that synchronously delivers the values provided as arguments.
+- `Observable.from(iterable)` — Converts its argument to an Observable instance. This method is commonly used to convert an array to an observable.
 
 
-_小结： 创建 Promise 对象的executor 函数在创建时是立即执行的。 resolve函数 和reject函数改变 promise对象状态并设置结果。_
-
-啰嗦的补充：
-
-- executor 是立即执行的，其中可以有耗时的 / 异步的过程，也可以没有。
-- executor 只会执行一次 resolve 或者 reject，然后 promises 的状态被改变。之后的所有的 resolve 和 reject 都会被忽略。
-- 技术上来说，我们可以给 reject（就像 resolve 一样）传递任何类型的参数。但是一般推荐使用 Error 对象作为 reject 的参数（或者继承于 Error 对象）
-- `state` 和 `result` 是 promises 的两个内部属性。我们并不能直接通过代码访问，但是我们可以使用 then/catch 方法来根据 state 操作 result。
-
-### then/catch/finally
-
-这三个方法是 Promise 原型方法
-
-- [`Promise.prototype.then()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then)
-- [`Promise.prototype.catch()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch)
-- [`Promise.prototype.finally()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/finally)
-
-
-如果说 promise 的 executor 是生产者， 则 then/catch 是消费者， 根据 promise对象的state，处理 result。语法：
+如果理解 Observable 的主要作用，就可以定义任意数据源的 Observable，例如：
 
 ```js
-// then
-p.then(onFulfilled[, onRejected]);
-p.then(value => { /* fulfillment */ }, error => { /* rejection */ })
+function fromEvent(target, eventName) {
+  return new Observable((observer) => {
+    const handler = (e) => observer.next(e);
 
-// catch
-p.catch(onRejected);
-p.catch(error => { /* rejection */ })
+    // Add the event handler to the target
+    target.addEventListener(eventName, handler);
+
+    return () => {
+      // Detach the event handler from the target
+      target.removeEventListener(eventName, handler);
+    };
+  });
+}
 ```
+这个函数创建一个 Observable 对象，其 subscribe 函数将 target 事件 与 observer 联系起来。
 
-注意上面 的 `value` 和 `error`，就是通过 `resolve` 和 `reject` 设置的。
+#### Multicasting
 
-> A Promise in the pending status. The handler function (onFulfilled or onRejected) then gets called asynchronously (as soon as the stack is empty)
+广播
 
-也就是说，这些处理方法本身并不是立即执行的， 是在当前的 promise settled 之后执行的，这非常像 callback 函数。
+参考 <https://angular.io/guide/observables#multicasting>
 
-所以单写一个 `then/catch`， 与以前的 callback 看上去没什么区别。其实不然。 在以前写异步的时候，写之前就需要知道异步操作可能返回什么结果以及应当怎么处理，就是先写好 callback。 使用 promise，可以先不用考虑如何处理异步操作的结果。promise 允许我们以正常的顺序书写异步编程， 这是非常好的编程模式。
+其主要原理是用一种 Observable 封装若干个 observer 变成一个 observer。这个observer 在被调用 `next` 的时候， 遍历调用队列中的 `observer.next`
 
-`then` 方法返回一个 Promise 对象。 这里啰嗦一些：调用 `then` 方法是立即执行的并且返回一个 Promise 对象， 但是里面的 `onFulfilled` 之类的处理方法是异步执行的。 `onFulfilled` 返回的结果 如何 与 `then` 返回的 Promise 对象联系起来？？
+### RxJS Library
 
-可以参考 MDN 文档： <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then>
-
-> A Promise in the pending status. The handler function (onFulfilled or onRejected) then gets called asynchronously (as soon as the stack is empty). After the invocation of the handler function, if the handler function:
-> - **returns a value**, the promise returned by then gets resolved with the returned value as its value;
-> - **throws an error**, the promise returned by then gets rejected with the thrown error as its value;
-> - **returns an already resolved promise**, the promise returned by then gets resolved with that promise's value as its value;
-> - **returns an already rejected promise**, the promise returned by then gets rejected with that promise's value as its value.
-> - **returns another pending promise object**, the resolution/rejection of the promise returned by then will be subsequent to the resolution/rejection of the promise returned by the handler. Also, the value of the promise returned by then will be the same as the value of the promise returned by the handler.
-
- 阅读理解时 把上面的 `value` 都看成 `result = value`， 把`gets revolved`看成 `state = fulfilled` 等等。
-
-翻译过来就是：
-
-- handle 正常返回一个 value， 则`then` 返回的 promise： `state = fulfilled, result = value`
-- handle 抛出 error， 则`then` 返回的 promise： `state = rejected, result = error`
-- handle 返回一个 promise： `state = fulfilled, result = value`， 则 `then` 返回的 promise： `state = fulfilled, result = value`， 复制过来。
-- handle 返回一个 promise： `state = rejected, result = error`， 则 `then` 返回的 promise： `state = rejected, result = error`， 复制过来
-- handle 返回一个 pending promise： `state = pending, result = undefined`， 则 `then` 返回的promise： 等着这个handle 返回的 promise 变成 settled。。然后抄过来。
-
-其实后三种情况可以理解成： `then` 返回的 promise 等着 `handle` 出结果， 如果 `handle` 的结果还是个 promise， 则继续等这个 promise 出结果， 最后把 state 和 result 抄过来。
-
-![wonderful promise](./images/promise-handler-variants.png)
-
-### error handling
-
-#### implicit try...catch
-
-无论在 executor 还是在 then/catch 中的 handle 方法中， 如果 throw 了一个 Error， 都会被 promise 隐式捕获， 并且将自身状态设置为 `rejected`， 结果设置为 `error`。
-
-例如：
-```js
-new Promise(function(resolve, reject) {
-  throw new Error("Whoops!");
-}).catch(alert); // Error: Whoops!
-```
-
-等价于：
-
-```js
-new Promise(function(resolve, reject) {
-  reject(new Error("Whoops!"));
-}).catch(alert); // Error: Whoops!
-```
-
-注意下面这个 ：
-
-```js
-new Promise(function(resolve, reject) {
-  setTimeout(() => {
-    throw new Error("Whoops!");
-  }, 1000);
-}).catch(alert);
-```
-
-会弹出警告么？  答案是不会。 因为 promise 的作用是设置一个定时器， 这本身没有任何错误。 定时器可以被正常设置， 所以 `catch` 中的 alert 不会被执行。 至于定时器本身抛出异常，那就不关 promise 的事情了。
-
-
-
-### chaining
-
-参考 ： https://javascript.info/promise-chaining
-
-`then/catch` 将立即返回一个 promise，并且这个promise 的结果与 handle 返回的结果相关。 理解了这两点， promises chaining 就很好理解。
-
-无非就是
-
-- 一个promise 接另一个 promise。
-- 除第一个promise之外，后面每个 promise 都有 异步执行的 handle 处理上一个 promise的结果，handle处理完之后 promise会设置自身的状态和结果。
-
-这是一种非常优雅的异步编程模式。 如果需要计算机做 1， 2， 3 三件事情， 非常耗时（I/O任务）， 写一个 `promise(1).then(2).then(3)` 就可以了。然后 coder 和 computer 就可以干点别的什么事情了。
-
-
-### resolve/reject/all/race
-
- 这些是 Promise 类方法， 并且都返回一个 Promise 对象。
-
-- `Promise.resolve(value)`
-    - `Promise.resolve(value) = Promise(state = fulfilled, result = value)`
-    - `Promise.resolve(promise) = promise`
-- `Promise.reject(error)`
-    - `Promise(state = rejected, result = error)`
-- `Promise.race(iterable)`，竞争， 只处理（抄）最快完成或失败的 promise 的状态和结果。
-- `Promise.all(iterable)`，
-    - 如果所有都完成了，all 返回 的 Promise结果设置为所有完成结果的 Array
-    - 如果有一个失败了，all 返回 的 Promise状态为 `rejected`， 结果为失败的 `error`。
-
-不再详细赘述。 关于 `Promise.reject(promise)` 是什么东西，没做实验验证，猜测还是一个 promise。
-
-
-
-### Reference
-
-
-- [Promise Basics](https://javascript.info/promise-basics)， 强烈推荐
-- [Promise Channing](https://javascript.info/https://javascript.info/promise-chaining)， 强烈推荐 + 1
-- [MDN Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promiseo)， 严肃的官方文档。
-- [Promise by google](https://developers.google.com/web/fundamentals/primers/promises)， 不怎么严肃的官方文档？
-- [Promise for Dummies](https://scotch.io/tutorials/javascript-promises-for-dummies)， 比喻很好，但并没有解释到位。
-- [Promise/A+](https://promisesaplus.com/)， 标准？？
-
-
-## Reactive Programming, Observable, RxJS
+Reactive Programming, Observable, RxJS
 
 ReactiveX 官网： http://reactivex.io/
 
@@ -726,49 +578,266 @@ the Observer pattern, the Iterator pattern, and functional programming
 
 ReactiveX 可以看做是 ： 观察者模式、 迭代器模式 和函数式编程 的一种组合。
 
-<!-- - Iterator pattern： 将数据流（stream）/ 序列 视为逐个发出的 事件 / 信号/ 粒子 / Whatever， 使用迭代器逐个 **操作** 元素，而不是完全等所有数据准备好再统一操作。
-- Observer pattern： 在观察者模式中，观察者订阅事件， 实际是将处理方法 注册到 事件通知函数里， 事件发生时逐个 "通知" 观察者处理事件。
-- Functional Programming 的主要思想是，输入输出可控制可复现，只要输入确定，输出总是确定。看上去像废话，但是是核心思想。 -->
+
+#### Observable creation functions
+
+1. Create an observable from a promise
+```js
+import { fromPromise } from 'rxjs';
+
+// Create an Observable out of a promise
+const data = fromPromise(fetch('/api/endpoint'));
+// Subscribe to begin listening for async result
+data.subscribe({
+ next(response) { console.log(response); },
+ error(err) { console.error('Error: ' + err); },
+ complete() { console.log('Completed'); }
+});
+```
+
+2. Create an observable from a counter
+
+```js
+import { interval } from 'rxjs';
+
+// Create an Observable that will publish a value on an interval
+const secondsCounter = interval(1000);
+// Subscribe to begin publishing values
+secondsCounter.subscribe(n =>
+  console.log(`It's been ${n} seconds since subscribing!`));
+```
+
+3. Create an observable from an event
+
+```js
+import { fromEvent } from 'rxjs';
+
+const el = document.getElementById('my-element');
+
+// Create an Observable that will publish mouse movements
+const mouseMoves = fromEvent(el, 'mousemove');
+
+// Subscribe to start listening for mouse-move events
+const subscription = mouseMoves.subscribe((evt: MouseEvent) => {
+  // Log coords of mouse movements
+  console.log(`Coords: ${evt.clientX} X ${evt.clientY}`);
+
+  // When the mouse is over the upper-left of the screen,
+  // unsubscribe to stop listening for mouse movements
+  if (evt.clientX < 40 && evt.clientY < 40) {
+    subscription.unsubscribe();
+  }
+});
+```
+
+4. Create an observable that creates an AJAX request
+
+```js
+import { ajax } from 'rxjs/ajax';
+
+// Create an Observable that will create an AJAX request
+const apiData = ajax('/api/data');
+// Subscribe to create the request
+apiData.subscribe(res => console.log(res.status, res.response));
+```
+
+注意上面的 subscribe 参数并不是 observer。 这是为了方便省事， 只写了一个 next 函数。 完整的形式是 ： `subscribe(next, error, complete)`
+
+#### Operators
+
+1. `pipe`
+
+pipe 主要作用是把 一些 Operator 给串起来。
+
+```js
+import { filter, map } from 'rxjs/operators';
+
+const squareOdd = of(1, 2, 3, 4, 5)
+  .pipe(
+    filter(n => n % 2 !== 0),
+    map(n => n * n)
+  );
+
+// Subscribe to get values
+squareOdd.subscribe(x => console.log(x));
+```
+
+2. common operators
+
+| AREA | 	OPERATORS |
+| ---- |  --------- |
+| Creation | 	from , fromPromise , fromEvent , of |
+| Combination | 	combineLatest , concat , merge , startWith , withLatestFrom , zip |
+| Filtering | 	debounceTime , distinctUntilChanged , filter , take , takeUntil |
+| Transformation | 	bufferTime , concatMap , map , mergeMap , scan , switchMap |
+| Utility | 	tap |
+| Multicasting | 	share |
+
+3. `catchError`
+
+RxJS provides the `catchError` operator that lets you handle known errors in the observable recipe.
+
+```js
+import { ajax } from 'rxjs/ajax';
+import { map, catchError } from 'rxjs/operators';
+// Return "response" from the API. If an error happens,
+// return an empty array.
+const apiData = ajax('/api/data').pipe(
+  map(res => {
+    if (!res.response) {
+      throw new Error('Value expected!');
+    }
+    return res.response;
+  }),
+  catchError(err => of([]))   // {***}
+);
+```
+
+注意在 `pipe` 里， 第一个operator 是map； 如果出错抛出异常； 第二个operator 是 catchError，如果出现异常，会捕获并返回一个空的 array。
+
+记住 Operator 的主要作用： 在subscribe 方法中新建一个中间层的observer，这个observer可以处理数据然后传给下一个 observer。
+
+catchError 稍微做了点改变， 这个中间层的observer ，如果捕获到异常，就传个空的结果给下一层 observer。
+
+4. `retry`
+
+Use the retry operator before the catchError operator. It **resubscribes to the original source observable**, which can then re-run the full sequence of actions that resulted in the error. If this includes an HTTP request, it will retry that HTTP request.
+
+就是重新订阅。
+
+```js
+import { ajax } from 'rxjs/ajax';
+import { map, retry, catchError } from 'rxjs/operators';
+const apiData = ajax('/api/data').pipe(
+  retry(3), // Retry up to 3 times before failing
+  map(res => {
+    if (!res.response) {
+      throw new Error('Value expected!');
+    }
+    return res.response;
+  }),
+  catchError(err => of([]))
+);
+```
+
+### Observables in Angular
+
+#### Naming conventions for observables
+
+没想到 Angular 对 Observable/RxJS 这么支持。。。。 连命名都有规范。 通常一个 observable 变量用 `$` 后缀。
+
+```js
+@Component({
+  selector: 'app-stopwatch',
+  templateUrl: './stopwatch.component.html'
+})
+export class StopwatchComponent {
+  stopwatchValue: number;
+  stopwatchValue$: Observable<number>;
+  ...
+}
+```
+
+#### EventEmitter
+
+Angular provides an EventEmitter class that is used when publishing values from a component through the `@Output()` decorator. EventEmitter extends Observable, adding an `emit()` method so it can send arbitrary values. When you call `emit()`, it passes the emitted value to the `next()` method of any subscribed observer.
+
+#### HTTP
+
+HttpClient 相比 Promise 主要的优点是：
+
+- Observables 不会改变 response 值； 用Promise可能会？？
+- 可以取消
+- 写 retry 代码很方便。
+
+#### Async pipe
+
+ 这是定义在 template 中的 pipe：
+
+```js
+@Component({
+  selector: 'async-observable-pipe',
+  template: `<div><code>observable|async</code>:
+       Time: {{ time | async }}</div>`
+})
+export class AsyncObservablePipeComponent {
+  time = new Observable(observer =>
+    setInterval(() => observer.next(new Date().toString()), 1000)
+  );
+}
+```
+注意 `time` 是一个 Observable（也可以是Promise）对象。 用 `| async` 这种pipe， 就像是 subscribe 这个 Observable 一样。 写起来非常方便。
+
+#### Router
+
+`Router.events` provides events as observables. You can use the filter() operator from RxJS to look for events of interest, and subscribe to them in order to make decisions based on the sequence of events in the navigation process. Here's an example:
+
+The `ActivatedRoute` is an injected router service that makes use of observables to get information about a route path and parameters. For example, ActivateRoute.url contains an observable that reports the route path or paths.
+
+```js
+import { ActivatedRoute } from '@angular/router';
+
+@Component({
+  selector: 'app-routable',
+  templateUrl: './routable.component.html',
+  styleUrls: ['./routable.component.css']
+})
+export class Routable2Component implements OnInit {
+  constructor(private activatedRoute: ActivatedRoute) {}
+
+  ngOnInit() {
+    this.activatedRoute.url
+      .subscribe(url => console.log('The URL changed to: ' + url));
+  }
+}
+```
+
+#### Reactive forms
+
+Reactive forms have properties that use observables to monitor form control values. The FormControl properties **`valueChanges`** and **`statusChanges`** contain observables that raise change events. Subscribing to an observable form-control property is a way of triggering application logic within the component class. For example:
+
+```js
+import { FormGroup } from '@angular/forms';
+
+@Component({
+  selector: 'my-component',
+  template: 'MyComponent Template'
+})
+export class MyComponent implements OnInit {
+  nameChangeLog: string[] = [];
+  heroForm: FormGroup;
+
+  ngOnInit() {
+    this.logNameChange();
+  }
+  logNameChange() {
+    const nameControl = this.heroForm.get('name');
+    nameControl.valueChanges.forEach(
+      (value: string) => this.nameChangeLog.push(value)
+    );
+  }
+}
+```
+
+这个 Observable 概念在 Angular里面用的是真广泛。 不知道在其他框架（React和Vue）是什么样子？
 
 
-[introx.md](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754) 这篇文章就下面这句话稍微解释了 Observable 是如何工作的，拿 Promise 做了个类比。
+### Observables vs. Promises
 
-> Observable is Promise++. In Rx you can easily convert a Promise to an Observable by doing `var stream = Rx.Observable.fromPromise(promise)`, so let's use that. The only difference is that Observables are not [Promises/A+](http://promises-aplus.github.io/promises-spec/) compliant, but conceptually there is no clash. A Promise is simply an Observable with one single emitted value. Rx streams go beyond promises by allowing many returned values.
+主要的差异：
 
-其他都是废话。
+- Observables are declarative; computation does not start until subscription. Promises execute immediately on creation. This makes observables useful for defining recipes that can be run whenever you need the result.
 
-Promise 可以认为是只发射一个值的 Observable。
+- Observables provide many values. Promises provide one. This makes observables useful for getting multiple values over time.
 
-### Promise vs.  Observable
+- Observables differentiate between chaining and subscription. Promises only have .then() clauses. This makes observables useful for creating complex transformation recipes to be used by other part of the system, without causing the work to be executed.
 
-- https://stackoverflow.com/questions/37364973/promise-vs-observable
-- https://medium.com/@mpodlasin/promises-vs-observables-4c123c51fe13， Promise才几岁就已经是 Old了。。
-
-
-Promise有严格的状态定义和状态转移定义，并且限制直接访问 Promise 内部变量。 但是 Observable 并没有遵守 Promises/A+。 Observable 确实相对于 Promise 模式进行了非常大的拓展，但是其稳定性、可靠性和安全性还有待验证。
+- Observables subscribe() is responsible for handling errors. Promises push errors to the child promises. This makes observables useful for centralized and predictable error handling.
 
 
 
+参考 https://angular.io/guide/comparing-observables， 还有与 Array 的比较，总结的很好。就不抄了。
 
-### Reference and Review
-
-- [Marbles](http://rxmarbles.com/)， Reactive Programming 有一个非常好的图示效果，使用弹珠演示。
-- Observer 模式与 Pub-Sub 模式的区别： https://hackernoon.com/observer-vs-pub-sub-pattern-50d3b27f838c
-- [introrx.md](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754)， github上的介绍文章，比 RxJS 星数还多。。。什么鬼。
-
-[introx.md](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754) 这篇文章， 写的也不怎么好（可能是我看不懂）。 我发现很多 js技术 文章都是各种解释表面现象， 技术多牛逼，可以干什么什么事情，关键的内部机制一笔带过， 是把人都当聪明人么： 了解内部机制的还用看你这文章？ 不了解内部机制的看的懂你这文章？ 也只能看个天花乱坠。
-
-关于观察者模式，我用起来总是别扭的很。 观察者订阅事件， subscribe，实际上是将处理方法的控制权交到了被观察对象的手上。虽然说最后还是由自己执行， 但是写起来总是很别扭。
-
-有的文章拿 公司（subject）招聘举例，应聘者提供个人简历（订阅事件），等待通知。 对于应聘者而言，这很被动： 万一公司把你简历扔了呢？ 应聘者一无所知。 公司的通知机制可靠么？ 应聘者也不知道。。
-
-Pub-Sub模式，或者称 生产消费者模式， 相比观察者模式就很好。 生产者/发布者 产生消息， 消费者/订阅者 处理消息。控制权都在各自的手里。
-
-
-
-
-
-
-
+Observable 用了古老的技艺，做了一些很优雅的事情。
 
 ## Angular Forms, Angular and Reactive JavaScript
