@@ -4,6 +4,114 @@
 
 一些技术专题，查漏补遗
 
+## Closure
+
+大名鼎鼎的闭包。
+
+参考
+
+- [javascript 教程](https://javascript.info/closure)
+- [阮一峰：学习Javascript闭包（Closure)](http://www.ruanyifeng.com/blog/2009/08/learning_javascript_closures.html)
+
+
+这里以 javascript 教程里面 关于 closure的介绍，做个笔记。
+
+> There is a general programming term “closure”, that developers generally should know.
+
+> A closure is a function that remembers its outer variables and can access them. In some languages, that’s not possible, or a function should be written in a special way to make it happen.
+
+闭包（closure） 是编程的一般概念， 它是指 在 function 中可以访问外部变量。
+
+在 JavaScript 中，通过 Lexical Environment 实现这一点。
+
+### Lexical Environment
+
+- 在 javascript 脚本开始执行时，有一个 Global Lexical Environment，包括这个脚本中直接声明的 variable（let/const/var），function（通过function声明）。
+
+- 每个声明的 function 并没有立刻执行。 有一个隐藏的 `[[Environment]]` 属性，是对 outer 环境的引用，即对 Lexical Environment 的引用。
+
+- 在 function 调用执行时， 创建一个新的 Lexical Environment（对象），这个 Lexical Environment 的 `[[Environment]]` 即外部的 Lexical Environment。
+
+- 在 function 内部也可以继续声明 function、variable。
+
+每个 function 在执行时使用的变量，首先从当前的 Lexical Environment找。如果找不到，从 `[[Environment]]` 引用的外部环境 找。。。 直到找到最外部的 Global Lexical Environment
+
+
+同时还要注意几点：
+
+- 每个 function 执行时创建的 Lexical Environment 是独立的，不是共享的。
+- 一般情况下，函数执行完，函数创建的 Lexical Environment 就会被回收掉（参考内存回收机制，不可达，not reachable）。 但如果存在某个 变量/function 的引用， 则会保留。
+- 更鸡贼的是， 在 V8 的优化中，如果发现 函数创建的 Lexical Environment 中的变量（不是函数） 没有被引用， 这些变量也会被释放掉。 这种情况可能出现在 debug 过程中。 不是 bug。
+
+
+### Code blocks
+
+不只是 function 的 `{}`， 在 JavaScript 中其他地方出现的 `{}` 都是一个新的 Lexical Environment。
+
+#### for/while
+
+```js
+for (let i = 0; i < 10; i++) {
+  // Each loop has its own Lexical Environment
+  // {i: value}
+}
+
+alert(i); // Error, no such variable
+```
+
+每个 loop 都是一个新的 Lexical Environment。
+
+#### Code Blocks
+
+```js
+{
+  // do some job with local variables that should not be seen outside
+
+  let message = "Hello";
+
+  alert(message); // Hello
+}
+
+alert(message); // Error: message is not defined
+```
+
+
+### IIFE (immediately-invoked function expressions)
+
+就是写完立即执行的函数。也不需要命名。 就是临时用一下。
+
+```js
+// Ways to create IIFE
+
+(function() {
+  alert("Brackets around the function");
+})();
+
+(function() {
+  alert("Brackets around the whole thing");
+}());
+
+!function() {
+  alert("Bitwise NOT operator starts the expression");
+}();
+
++function() {
+  alert("Unary plus starts the expression");
+}();
+```
+
+ 为什么不能直接这样写？
+
+```js
+function() {
+
+}();
+```
+
+首先，这是个函数声明，函数声明必须要有名称。 其次，即使加上名称， 也不能在 `{}` 后面加上 `()`。
+
+所以用一个 表达式的形式，来写 IIFE。
+
 
 ## Async
 

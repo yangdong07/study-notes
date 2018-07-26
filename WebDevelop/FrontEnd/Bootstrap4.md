@@ -51,23 +51,6 @@ http://www.tonymarston.net/php-mysql/3-tier-architecture.html
 3层架构与 MVC 有一些区别。 感觉上 3层 架构更清晰一些。 区分展示层、业务逻辑层和数据访问层，职责分明，并且所用技术也可以区分。
 
 
-## Node.js
-
-参考 <https://en.wikipedia.org/wiki/Node.js>
-
-> Node.js is an open-source, cross-platform JavaScript run-time environment that executes JavaScript code server-side. Historically, JavaScript was used primarily for client-side scripting, in which scripts written in JavaScript are embedded in a webpage's HTML and run client-side by a JavaScript engine in the user's web browser. Node.js lets developers use JavaScript for server-side scripting—running scripts server-side to produce dynamic web page content before the page is sent to the user's web browser. Consequently, Node.js represents a "JavaScript everywhere" paradigm,[5] unifying web application development around a single programming language, rather than different languages for server side and client side scripts.
-
-大意：
-
-- Node.js 是一个 javascript run-time environment。
-- 过去 javascript 运行在客户端浏览器上，由 JavaScript egine运行。
-- 主要为了在服务器端执行，并且返回动态网页内容。统一客户端和服务器端编程语言。。
-
-如果拿 node.js 与 python 做比较， 二者有点相似； npm 也可以类比成 pip。
-
-### npm (node package manager)
-
-可以安装 package
 
 ### package.json
 

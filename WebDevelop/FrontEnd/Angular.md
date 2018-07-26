@@ -3,6 +3,21 @@
 
 ## Intro to Angular
 
+### Not Clear
+
+1. host 问题
+
+在animation的时候，为了做到 route animation， 在 `@Component` 里用到了 `host`， 感觉是在定义 `host` 的一些属性和样式。这样写法确实省事。 参考 <https://angular.io/guide/styleguide#hostlistenerhostbinding-decorators-versus-host-metadata> 还有另一种写法。
+
+使用 HostBinding 参考 <https://alligator.io/angular/hostbinding-hostlistener/>
+
+2. entryComponents 是什么概念。
+3. 如果我想自己整一个组件（比如 加载动画组件），放在哪里？
+
+4. 这里每种数据都是一个 类，比如 Feedback、Dish。 使用 restangular操作 GET，POST ，加了点料进去，log出来，除了原来的数据，还多了一些操作方法，wrapper之类的东西。 这些是什么东西？
+
+5. typescripts 的类型转换蛋疼。。
+
 ### Library vs. Framework
 
 参考 <https://medium.com/datafire-io/libraries-vs-frameworks-626cdde799a7> 写的很不错。
@@ -56,8 +71,6 @@ Library 是砖块， Framework 就是框架
 
 ### AppModule/AppComponent
 
-可以定义组件，使用独立模板和样式。 组件之间可以层级调用。 非常好的组织划分方式。
-
 这是根组件。
 
 ```javascript
@@ -83,31 +96,229 @@ export class AppComponent {
 template: `<h1> {{title} </h1>}`
 ```
 
+## Angular Architecture
 
-### Directive
+### NgModules
 
-Directive 是 Angular 中的一个基本概念。 Component 也可以看成一个 带 Template 的 Directive。
+- Angular apps are modular and Angular has its own modularity system called **NgModules**.
+- An NgModule is a **container** for a cohesive block of code dedicated to an application domain, a workflow, or a closely related set of capabilities.
+- It can contain **components**, **service providers**, and other code files whose **scope is defined by the containing NgModule**.
+- It can **import functionality that is exported from other NgModules**, and **export selected functionality for use by other NgModules**.
 
-#### Structural Directive
+NgModule 是一个大杂烩。包括：
 
-用于调整 DOM 结构。
-
-- `ngIf`，  `<div *ngIf="selectDish">...</div>` ，如果有值，会插入到 DOM中。
-- `ngFor`，  一种循环遍历方式，适用于列表，或者 `list` 元素
-- `ngSwitch`，类似 switch 方法
-
-
-#### Attribute Directive
-
-参考 <https://angular.io/guide/attribute-directives>
-
-它的主要作用是通过属性为元素添加一些特性（功能）。
+- **`declarations`** — **components, directives, and pipes**，可以在 templates中使用。
+- **`exports`** — The **subset of declarations** that should be visible and usable in the component templates of other NgModules. 给别的 NgModules 使用的。
+- **`imports`** — **Other modules whose exported classes are needed** by component templates declared in this NgModule. 导入的 NgModules，这些 NgModules 的 exports 可以在 templates中使用。
+- **`providers`** — **Creators of services** that this NgModule contributes to the global collection of services; they become accessible in all parts of the app. (You can also specify providers at the component level, which is often preferred.)
+- **`bootstrap`** — **The main application view**, called the root component, which hosts all other app views. **Only the root NgModule should set this bootstrap property**.
 
 
-### Angular Pipe
+每个 Angular App 有一个 root module： AppModule， AppModule 有一个 root component， 为 AppComponent， 是 bootstrap 启动位置。
+
+
+### Components
+
+ 参考 <https://angular.io/guide/architecture-components>
+
+A component controls a patch of screen called a view.
+
+The **@Component decorator** identifies the class immediately below it as a component class
+
+![Component Tree](./images/component-tree.png)
+
+如图， 通过 templates 构成了层级关系。
+
+### Services and Dependency Injection
+
+
+## Angular Components
+
+### Template Syntax
+
+更完整的说明参考 <https://angular.io/guide/template-syntax>
+
+- Interpolation ( `{﻿{...}}` )
+- Data-Binding
+- Directives
+    - Structural Directives: `*ngIf`, `*ngFor`
+    - Attribute Directives
+- Operator
+    - Pipes  ( `{{ ... | ... }}`)
+    - Safe Navigation Operator ( `?.` )
+    - Non-null assertion Operator ( `!` )
+
+
+### Data-Binding
+
+这是 Data 与 View 之间必须存在的一个关系， 二者是强耦合的。
+
+数据流可以是单向的，从 Data数据库 流向 View，也可以是双向的： 一种交互：添加、编辑数据。
+
+有很多概念提出来，就是为了降低 Data 与 View 之间的耦合度。 比如 reflux， 指明数据必须单向流动。
+
+Angular的 data binding包括以下几种：
+
+![Angular Data-binding](./images/angular_databinding.png)
+
+左边是 DOM，是 view；  右边是 Component，是数据源（可以通过api从backend取）。
+
+在 Component 里定义  property；在模板中可以这样写：
+
+| component | template | 意义    |
+| :------ | :---- | :----|
+| `property: type = value` | `{{ value }}`| Data ----> View，单向 |
+| `property: type = value` | `<app-sub-component [sub-property] = "value" />`| Data ----> View，单向， 向子组件传入数据 |
+| `handler` | `(event) = "handler" `|  Data <---- View， 单向 |
+| `property` | `[(ng-model)] == "property"` | Data <----> View， 双向|
+
+注意第二种写法向子组件传入数据，一定要注意在 子组件的 Component 定义中， 将需要给传入的数据变量添加 `Input()` 装饰器。
+
+
+
+### Components Interaction
+
+ 参考 https://angular.io/guide/component-interaction
+
+Component 之间的交互。主要是层级关系中的 Parent 和 Child 组件交互。 如果是 Sibling 关系，总是可以通过 父组件 间接交互。
+
+1. \@Input + setter
+
+数据单向传输： 从父组件到子组件， 通过属性或者数据。
+
+- 子组件： `@Input() iii` + setter
+- 父组件模板： `[iii]="property/value"`
+
+2. Parent listens for child event
+
+- 子组件： `@Output() ooo = new EventEmitter<boolean>()` 类似一个事件发生器， 事件类型是 boolean 型。也可以是其他类。
+- 在父组件模板中 ， 使用 `(ooo)="handler($event)"` 用 handler 处理。
+
+3. Parent interacts with child via local variable
+
+- 子组件： 随意
+- 父组件模板： `<child-component #child></child-component>`
+
+就是之前的 Template Reference Variable，在父组件中就可以用 `child` 变量访问 子组件的所有属性和方法。
+
+这样做的问题是：只能在Template中调用子组件， 在父组件类中，干瞪眼。
+
+4. Parent calls an _@ViewChild()_
+
+ViewChild 也是一个 Angular 常用的概念
+
+> You can use ViewChild to get the first element or the directive matching the selector from the view DOM. If the view DOM changes, and a new child matches the selector, the property will be updated.
+
+意思就是找到第一个 match 的 DOM 元素，然后可以在父组件类中使用。
+
+- 子组件类： `XyzComponent`
+- 父组件使用： `@ViewChild(XyzComponent) child: XyzComponent`
+
+然后可以用 child 调用子组件的所有属性和方法。 这里注意另一个概念： AfterViewInit lifecycle hook.
+
+注意 child 对应一个实际的 DOM元素， 一定是等所有 DOM 元素： 父组件、子组件都创建完成时候， 也就是 **AfterViewInit** 及之后， 才能访问到。
+
+
+关于 ViewChild，有一些参考：
+
+- [非常详细的官方解释](https://blog.angular-university.io/angular-viewchild/)
+- <https://alligator.io/angular/viewchild-access-component/>
+
+
+5. TODO: Parent and children communicate via a service
+
+### Pipes
 
 在模板文件中，可以 用 一些 `|` ，来对数据进行简单处理。例如 : `{{ name | uppercase }}`， 就是大写处理。
 
+### Directives
+
+创建 directive: `ng g directive highlight`
+
+```js
+import { Directive, ElementRef, Renderer2, HostListener } from '@angular/core';
+
+@Directive({
+  selector: '[appHighlight]'
+})
+export class HighlightDirective {
+
+  constructor(private el: ElementRef,
+              private renderer: Renderer2) { }
+
+  @HostListener('mouseenter') onMouseEnter() {
+    this.renderer.addClass(this.el.nativeElement, 'highlight');
+  }
+
+  @HostListener('mouseleave') onMouseLeave() {
+    this.renderer.removeClass(this.el.nativeElement, 'highlight');
+  }
+}
+```
+
+上面是一个很简单的例子，用到了：
+
+- `@Directive`， Decorator
+- `ElementRef`， 放到 constructor 参数中，类似 service injection 一样， 将 directive owner 的 DOM 元素 “注入” ，以便使用（修改样式、类等）
+- `Renderer2`， 又是一个奇怪的东西，没有也可以。 有了更方便。
+- `HostListener`， 用于监听 `Host` 即属主的 事件。
+
+
+Renderer2 的一些资料
+
+参考 <https://alligator.io/angular/using-renderer2/>。 主要用来修改 DOM。
+
+为什么需要这个东西？ 参考 <https://stackoverflow.com/questions/47862105/what-is-renderer2-in-angular4-why-it-is-preferred-over-jquery>
+
+
+
+### Animations
+
+使用 Animation 不会附加什么业务上的功能， 主要目的是为了更好的 UX。
+
+ 基本用法：
+
+```js
+import { trigger, state, style, animate, transition } from '@angular/animations';
+
+animations: [
+  trigger('flyInOut', [
+    state('*', style({ opacity: 1, transform: 'translateX(0)'})),
+    transition(':enter', [
+      style({ transform: 'translateX(-100%)', opacity: 0 }),
+      animate('500ms ease-in')
+    ]),
+    transition(':leave', [
+      animate('500ms ease-out', style({ transform: 'translateX(100%)', opacity: 0}))
+    ])
+  ])
+]
+```
+
+```html
+<ul>
+  <li *ngFor="let hero of heroes"
+      [@flyInOut]="hero.state"
+      (click)="hero.toggleState()">
+    {{hero.name}}
+  </li>
+</ul>
+```
+
+注意几点：
+
+1. `trigger` 第一个参数 `flyInOut` ，与模板中 `[@flyInOut]` 对应。
+    - `[@flyInOut]="xxx"`， xxx 是与之单向数据绑定的数据，即状态，可以取值为 `in`，也可以没有。
+2. `trigger` 第二个参数，定义 若干 state 和 transition。
+3. `state` 定义状态名 和 `style`
+4. `transition`， 定义状态转移条件，和  `style`， `animate`
+5. `void => *` 表示进入状态， 也可以用 `:enter` 表示
+6. `* => void` 表示离开状态， 也可以用 `:leave` 表示
+
+
+Animation 虽然不重要，但是想要做好，也是很麻烦的事情。 就像 PPT 里面的动画一样。
+
+比如一些手势，模仿一些 ios 应用那样。
 
 
 ## Angular Material
@@ -170,31 +381,6 @@ Angular 与 Bootstrap 的 JQuery Component 还有一些冲突，所以避免使�
 主轴是横轴，交叉轴是纵轴。 对齐方式首先是 水平居中，然后是 垂直居中。
 
 
-## Angular Data-Binding
-
-这是 Data 与 View 之间必须存在的一个关系， 二者是强耦合的。
-
-数据流可以是单向的，从 Data数据库 流向 View，也可以是双向的： 一种交互：添加、编辑数据。
-
-有很多概念提出来，就是为了降低 Data 与 View 之间的耦合度。 比如 reflux， 指明数据必须单向流动。
-
-Angular的 data binding包括以下几种：
-
-![Angular Data-binding](./images/angular_databinding.png)
-
-左边是 DOM，是 view；  右边是 Component，是数据源（可以通过api从backend取）。
-
-在 Component 里定义  property；在模板中可以这样写：
-
-| component | template | 意义    |
-| :------ | :---- | :----|
-| `property: type = value` | `{{ value }}`| Data ----> View，单向 |
-| `property: type = value` | `<app-sub-component [sub-property] = "value" />`| Data ----> View，单向， 向子组件传入数据 |
-| `handler` | `(event) = "handler" `|  Data <---- View， 单向 |
-| `property` | `[(ng-model)] == "property"` | Data <----> View， 双向|
-
-注意第二种写法向子组件传入数据，一定要注意在 子组件的 Component 定义中， 将需要给传入的数据变量添加 `Input()` 装饰器。
-
 
 ## Angular Service
 
@@ -221,7 +407,7 @@ MVVM 是 MVC的进一步简化： Model View View-Model， 去掉了Controller�
 
 主要是这句话： **Passing the service to the client, rather than allowing a client to build or find the service, is the fundamental requirement of the pattern.**  就是不要让client去找 server， 而是把 server 注入到 client 中。
 
-如果一个对象 A 依赖另一个对象 B， 常规思路是什么？就是在 A 需要B的时候创建 B，然后使用 B。 这种做法被诟病的地方是： **这种依赖关系被 A 隐藏了。**
+如果一个对象 A 依赖另一个对象 B， 常规思路是什么？就是在 A 需要B的时候创建 B，然后使用 B。 这种做法被诟病的地方是： **这种依赖关系被 A 隐藏了**。并且在 A 中创建 B 会使代码变得僵硬。
 
 所谓依赖注入是指， 在创建A时（或者创建A之后），将 B 传递给 A。 A 只需要知道接口即可， 就可以任意使用。 B成为 A的一部分。_The service is made part of the client's state._ 这种好处就是 依赖关系外部可见：我创建了 A、B， 我知道 A 需要依赖 B。把 B 传给 A好了。 **主要将创建B的职责从 A 中剥离了**
 
@@ -231,6 +417,7 @@ MVVM 是 MVC的进一步简化： Model View View-Model， 去掉了Controller�
 参考
 
 - <https://en.wikipedia.org/wiki/Dependency_injection>
+- [The Dependency Injection pattern](https://angular.io/guide/dependency-injection-pattern)， angular的解释。举得例子不错。 在创建 Car的时候，Car自己创建 Engine、Tires， 这种思路是错误的。正确的思路是在外面创建好 Engine、Tires， 然后注入到 Car中。 这样更灵活。
 
 
 
@@ -243,9 +430,59 @@ Angular Service主要就是实现了这种依赖注入的概念。定义 Service
 - `ng generate service services/dish`， 会创建一个 Angular Service
 - 在 services/dish.ts 里面可以写一些接口方法。
 - 在 app.moudle 里 添加 DishService， 即可以在所有组件中注入。
-- 在 Component 里 “注入” 这个 DishService 注入方式就是在 constructor里面 添加一个 `private dishService: DishService` ，然后就可以通过 dishService 调用方法，获取数据。
+- 在 Component 里 “注入” 这个 DishService 注入方式就是在 constructor方法里面添加一个参数 `private dishService: DishService`，然后就可以通过 dishService 调用方法，获取数据。
 
 表面上看，其实跟直接调用也没啥区别。 感觉只是一种形式上的要求。
+
+### Angular Dependency Injection
+
+#### Injectors
+
+A service like HeroService is just a class in Angular until you register it with an **Angular dependency injector.**
+
+An Angular injector is **responsible for creating service instances and injecting them into classes like the XxxxComponent**.
+
+Angular doesn't automatically know how you want to create instances of your services or the injector to create your service. You must configure it by specifying **providers for every service**.
+
+**Providers** tell the injector how to create the service. Without a provider, the injector would not know that it is responsible for injecting the service nor be able to create the service.
+
+#### `@Injectable` providers
+
+```js
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class HeroService {
+  constructor() { }
+}
+```
+
+每创建一个新的 service 都会给出这样的模板。 `providedIn: 'root'` 表示由 root injector 创建一个 instance，供全局使用。 也可以是 `providedIn: XxxModule`。
+
+#### `@NgModule` providers
+
+在 app.module 中（或者其他 module）：
+
+```js
+providers: [
+  UserService,
+  { provide: APP_CONFIG, useValue: HERO_DI_CONFIG }
+],
+```
+
+注意第二种： 很像是设置一个全局变量 `APP_CONFIG = HERO_DI_CONFIG`
+
+
+### Hierarchical Dependency Injectors
+
+ **An Angular application is a tree of components**. Each component instance has its own injector. The tree of components parallels the tree of injectors.
+
+
+
+
+
 
 ## Router and Single Page Application
 
@@ -472,58 +709,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 ...
 ```
 
+#### onValueChagne
 
-
-## Component Interaction
-
- 参考 https://angular.io/guide/component-interaction
-
-Component 之间的交互。主要是层级关系中的 Parent 和 Child 组件交互。 如果是 Sibling 关系，总是可以通过 父组件 间接交互。
-
-### \@Input + setter
-
-数据单向传输： 从父组件到子组件， 通过属性或者数据。
-
-- 子组件： `@Input() iii` + setter
-- 父组件模板： `[iii]="property/value"`
-
-### Parent listens for child event
-
-- 子组件： `@Output() ooo = new EventEmitter<boolean>()` 类似一个事件发生器， 事件类型是 boolean 型。也可以是其他类。
-- 在父组件模板中 ， 使用 `(ooo)="handler($event)"` 用 handler 处理。
-
-### Parent interacts with child via local variable
-
-- 子组件： 随意
-- 父组件模板： `<child-component #child></child-component>`
-
-就是之前的 Template Reference Variable，在父组件中就可以用 `child` 变量访问 子组件的所有属性和方法。
-
-这样做的问题是：只能在Template中调用子组件， 在父组件类中，干瞪眼。
-
-### Parent calls an _@ViewChild()_
-
-ViewChild 也是一个 Angular 常用的概念
-
-> You can use ViewChild to get the first element or the directive matching the selector from the view DOM. If the view DOM changes, and a new child matches the selector, the property will be updated.
-
-意思就是找到第一个 match 的 DOM 元素，然后可以在父组件类中使用。
-
-- 子组件类： `XyzComponent`
-- 父组件使用： `@ViewChild(XyzComponent) child: XyzComponent`
-
-然后可以用 child 调用子组件的所有属性和方法。 这里注意另一个概念： AfterViewInit lifecycle hook.
-
-注意 child 对应一个实际的 DOM元素， 一定是等所有 DOM 元素： 父组件、子组件都创建完成时候， 也就是 **AfterViewInit** 及之后， 才能访问到。
-
-
-关于 ViewChild，有一些参考：
-
-- [非常详细的官方解释](https://blog.angular-university.io/angular-viewchild/)
-- <https://alligator.io/angular/viewchild-access-component/>
-
-
-### TODO: Parent and children communicate via a service
 
 
 ## Observables & RxJS
@@ -840,4 +1027,80 @@ export class MyComponent implements OnInit {
 
 Observable 用了古老的技艺，做了一些很优雅的事情。
 
-## Angular Forms, Angular and Reactive JavaScript
+
+## Web Services
+
+主要是一些概念。。
+
+- SOA, services orientated architecture. 信息结构标准？
+- SOAP, Simple Object Access Protocol
+    - WSDL, Web Services Description Language
+    - XML based
+- REST, Representational State Transfer
+
+
+### REST
+
+REST 应该是 web service 里最重要和最基本的概念之一了。
+
+国内也有一些好文章，解释的很不错：
+
+- [理解本真的REST架构风格](http://www.infoq.com/cn/articles/understanding-restful-style/#anch124691)
+- [理解RESTful架构](http://www.ruanyifeng.com/blog/2011/09/restful.html)， 阮一峰的博客，2011年的文章。。。一贯的简洁，一针见血。
+- [知乎：怎样用通俗的语言解释REST，以及RESTful？](https://www.zhihu.com/question/28557115)
+
+一句话概括： **URI 定位资源，用HTTP动词（GET,POST,DELETE,DETC）描述操作。**
+
+RESTful架构：
+
+1. 每一个 **URI** 代表一种 **资源** （某种信息实体，一种抽象概念）；
+2. 客户端和服务器之间，传递这种 **资源的某种表现层 (Representation)**；
+3. 客户端通过四个HTTP动词，对服务器端资源进行操作，实现"**表现层状态转化(REST)**"。
+
+所以在 RESTful API 中， 每个 API 实际上都是一种 资源， 通过 HTTP动词 对资源进行操作。
+
+过去虽然也设计过不少 API，但是完全没有头绪，对 RESTful API 从来没有理解过。。。
+
+#### Stateless	Server
+
+这是我之前知道的唯一关于 RESTful API 的事情。 以前走马观花的看了一些东西，唯一记住就是这个。。
+
+意思是： 服务器是无状态的， 每一个请求都是一个新的请求。 客户端负责维护状态(cookies)。 这里的 state 与 REST 中的state 是不同概念。
+
+
+#### idempotence
+
+幂等概念： 就是一种操作无论重复多少次，其结果都是一样的。
+
+
+
+
+
+## Angular Directives
+
+### Renderer2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## End
