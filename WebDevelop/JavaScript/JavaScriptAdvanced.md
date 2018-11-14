@@ -4,6 +4,263 @@
 
 一些技术专题，查漏补遗
 
+
+## What's _this_ in JavaScript?
+
+大名鼎鼎的 `this`
+
+参考： https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this
+
+很多很细。 其中一个麻烦在于 strict mode 和 non-strict mode， 两者 this 是有区别的。
+
+### Global Context
+
+In the global execution context (outside of any function), `this` refers to the global object whether in strict mode or not.
+
+在全局执行环境中
+
+- browsers 里面就是 window 对象
+- nodejs 里面就是 global 对象
+
+```js
+// In web browsers, the window object is also the global object:
+console.log(this === window); // true
+
+a = 37;
+console.log(window.a); // 37
+
+this.b = "MDN";
+console.log(window.b)  // "MDN"
+console.log(b)         // "MDN"
+```  
+
+### Function context
+
+在 non-strict mode下，什么执行环境下，this 就是什么对象。 一般 this 即指执行环境。
+
+比如在全局执行环境中执行函数， 函数中使用的 this 就是 window/global 对象。
+
+```js
+function f1() {
+  return this;
+}
+
+// In a browser:
+f1() === window; // true
+// In Node:
+f1() === global; // true
+```
+
+但是在 strict mode下，the value of `this` remains at whatever it was set to when entering the execution context, so, in the following case, this will default to undefined:
+
+```js
+function f2() {
+  'use strict'; // see strict mode
+  return this;
+}
+
+f2() === undefined; // true
+```
+
+in strict mode, if `this` was not defined by the execution context, it remains undefined.
+
+注意上面代码，这样写也是一样的：
+
+```js
+'use strict'; // see strict mode
+function f2() {
+  return this;
+}
+
+f2() === undefined; // true
+```
+
+这说明在 strict mode下，需要先指定 this 是什么。
+
+#### `call` and `apply`
+
+可以通过 Function.prototype 中的  `call`或者 `apply` 方法指定 `this`：
+
+```js
+// An object can be passed as the first argument to call or apply and this will be bound to it.
+var obj = {a: 'Custom'};
+
+// This property is set on the global object
+var a = 'Global';
+
+function whatsThis() {
+  return this.a;  // The value of this is dependent on how the function is called
+}
+
+whatsThis();          // 'Global'
+whatsThis.call(obj);  // 'Custom'
+whatsThis.apply(obj); // 'Custom'
+```
+
+注意在使用 `call` 或者 `apply` 时，如果 obj 是 Primitive 而不是 Object（比如是个 数字 7 或字符串 "123"）， 会将其转成对象（用 `ToObject`) 方法。
+
+```js
+function bar() {
+  console.log(Object.prototype.toString.call(this));
+}
+
+bar.call(7);     // [object Number]
+bar.call('foo'); // [object String]
+```
+
+#### The bind method
+
+ECMAScript 5 introduced `Function.prototype.bind`
+
+可以指定 一个 function的 this 是什么。但是只能bind 一次。
+
+```js
+function f() {
+  return this.a;
+}
+
+var g = f.bind({a: 'azerty'});
+console.log(g()); // azerty
+
+var h = g.bind({a: 'yoo'}); // bind only works once!
+console.log(h()); // azerty
+
+var o = {a: 37, f: f, g: g, h: h};
+console.log(o.a, o.f(), o.g(), o.h()); // 37,37, azerty, azerty
+```
+
+#### Arrow functions
+
+arrow function 的 `this` 又很特别：它不遵循上面的规则，**`this` retains the value of the enclosing lexical context's `this`.** 意思是什么地方（lexical context）创建的， 就固定为此 lexical context 的 `this`。 并且通过 `call` 或者 `bind` 也改不了：
+
+```js
+var globalObject = this;
+var foo = (() => this);
+console.log(foo() === globalObject); // true
+
+// Call as a method of an object
+var obj = {func: foo};
+console.log(obj.func() === globalObject); // true
+
+// Attempt to set this using call
+console.log(foo.call(obj) === globalObject); // true
+
+// Attempt to set this using bind
+foo = foo.bind(obj);
+console.log(foo() === globalObject); // true
+```
+
+再观察下面的代码：
+
+```js
+var obj = {a: function() {
+                    var b = (() => this);
+                    return b;
+                  }
+          };
+
+var b = obj.a();
+console.log(b() === obj); // true
+
+var a = obj.a;
+console.log(a()() == window); // true
+```
+
+解释一下上面的现象。注意两个规则：
+
+1. arrow function 的 this 是其创建环境 lexical context 的this， 并且固定不变。
+2. 如果 function 通过 object 调用，则其 this 是 object； 如果直接调用， 则 `this` 是 `undefined`(strict mode) 或者 the global object (non-strict mode)
+
+解释：
+
+1. `var b = obj.a();` 这里的 `b` 是通过 `obj` 调用 `a` 创建的。 `b` 这个箭头函数的 `this` 就是其创建环境中的 `this`，即函数 `a` 的 `this`， 而 `a` 的 `this === obj`， 所以 `b() === obj`
+2. `var a = obj.a; a()()` 这里的 `a` 直接引用了 `obj.a`，`a` 脱离了 `obj`，成为了一个 “无主的” 的函数。 所以 `a()` 创建的函数（箭头函数）的 `this` 是 `undefined` 或者 global object。
+
+#### As an object method
+
+如果 function 通过 object 调用， 则 其 `this` 为这个对象。
+
+```js
+var o = {prop: 37};
+
+function independent() {
+  return this.prop;
+}
+
+o.f = independent;
+
+console.log(o.f()); // 37
+
+o.b = {g: independent, prop: 42};
+console.log(o.b.g()); // 42
+
+```
+
+
+- `o.f()` 通过  `o` 调用了 `f`， 则 `f` 的 `this` 是 `o`
+- `o.b.g()` 通过 `o.b` 调用了 `g`， 则 `g` 的 `this` 是 `o.b`
+
+
+#### `this` on the object's prototype chain
+
+```js
+var o = {f: function() { return this.a + this.b; }};
+var p = Object.create(o);
+p.a = 1;
+p.b = 4;
+
+console.log(p.f()); // 5
+```
+
+其中 `o` 是 `p` 的 `__proto__` 。 虽然是 `p` 间接用到 `f`，但 `this` 仍然认为是 `p`， 而不是 `o`。
+
+#### `this` with a getter or setter
+
+```js
+function sum() {
+  return this.a + this.b + this.c;
+}
+
+var o = {
+  a: 1,
+  b: 2,
+  c: 3,
+  get average() {
+    return (this.a + this.b + this.c) / 3;
+  }
+};
+
+Object.defineProperty(o, 'sum', {
+    get: sum, enumerable: true, configurable: true});
+
+console.log(o.average, o.sum); // 2, 6
+```
+
+不管以何种方式创建的 getter 和setter， 都是谁调用 `this` 是谁。
+
+
+#### As a constructor
+
+When a function is used as a constructor (with the `new` keyword), its `this` is bound to the new object being constructed.
+
+#### As a DOM event handler
+
+在 DOM 元素的事件处理器中， `this` 即 DOM 元素。
+
+
+### this vs. Lexical Environment
+
+二者应该是不同的概念。
+
+Lexical Environment 的定义更明确一些。字面翻译就是 “词法环境”。
+
+`this` 通俗的来说： 谁调用，执行环境就是谁。
+
+
+
+
+
+
 ## Closure
 
 大名鼎鼎的闭包。
@@ -20,21 +277,21 @@
 
 > A closure is a function that remembers its outer variables and can access them. In some languages, that’s not possible, or a function should be written in a special way to make it happen.
 
-闭包（closure） 是编程的一般概念， 它是指 在 function 中可以访问外部变量。
+闭包（closure） 是编程的一般概念， 一般指在 function 中可以访问外部变量。
 
-在 JavaScript 中，通过 Lexical Environment 实现这一点。
+在 JavaScript 中，通过 Lexical Environment 实现这一点。
 
 ### Lexical Environment
 
 - 在 javascript 脚本开始执行时，有一个 Global Lexical Environment，包括这个脚本中直接声明的 variable（let/const/var），function（通过function声明）。
 
-- 每个声明的 function 并没有立刻执行。 有一个隐藏的 `[[Environment]]` 属性，是对 outer 环境的引用，即对 Lexical Environment 的引用。
+- 每个声明的 function 并没有立刻执行。 有一个隐藏的 `[[Environment]]` 属性，是对 outer 环境的引用，即对 Lexical Environment 的引用。
 
 - 在 function 调用执行时， 创建一个新的 Lexical Environment（对象），这个 Lexical Environment 的 `[[Environment]]` 即外部的 Lexical Environment。
 
 - 在 function 内部也可以继续声明 function、variable。
 
-每个 function 在执行时使用的变量，首先从当前的 Lexical Environment找。如果找不到，从 `[[Environment]]` 引用的外部环境 找。。。 直到找到最外部的 Global Lexical Environment
+每个 function 在执行时使用的变量，首先从当前的 Lexical Environment找。如果找不到，从 `[[Environment]]` 引用的外部环境 找。。。 直到找到最外部的 Global Lexical Environment
 
 
 同时还要注意几点：
@@ -46,7 +303,7 @@
 
 ### Code blocks
 
-不只是 function 的 `{}`， 在 JavaScript 中其他地方出现的 `{}` 都是一个新的 Lexical Environment。
+不只是 function 的 `{}`， 在 JavaScript 中其他地方出现的 `{}` 都是一个新的 Lexical Environment。
 
 #### for/while
 

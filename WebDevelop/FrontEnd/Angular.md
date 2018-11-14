@@ -12,9 +12,9 @@
 使用 HostBinding 参考 <https://alligator.io/angular/hostbinding-hostlistener/>
 
 2. entryComponents 是什么概念。
-3. 如果我想自己整一个组件（比如 加载动画组件），放在哪里？
+3. 如果我想自己整一个组件（比如 加载动画组件），放在哪里？
 
-4. 这里每种数据都是一个 类，比如 Feedback、Dish。 使用 restangular操作 GET，POST ，加了点料进去，log出来，除了原来的数据，还多了一些操作方法，wrapper之类的东西。 这些是什么东西？
+4. 这里每种数据都是一个 类，比如 Feedback、Dish。 使用 restangular操作 GET，POST ，加了点料进去，log出来，除了原来的数据，还多了一些操作方法，wrapper之类的东西。 这些是什么东西？
 
 5. typescripts 的类型转换蛋疼。。
 
@@ -114,7 +114,7 @@ NgModule 是一个大杂烩。包括：
 - **`bootstrap`** — **The main application view**, called the root component, which hosts all other app views. **Only the root NgModule should set this bootstrap property**.
 
 
-每个 Angular App 有一个 root module： AppModule， AppModule 有一个 root component， 为 AppComponent， 是 bootstrap 启动位置。
+每个 Angular App 有一个 root module： AppModule， AppModule 有一个 root component， 为 AppComponent， 是 bootstrap 启动位置。
 
 
 ### Components
@@ -260,11 +260,11 @@ export class HighlightDirective {
 
 - `@Directive`， Decorator
 - `ElementRef`， 放到 constructor 参数中，类似 service injection 一样， 将 directive owner 的 DOM 元素 “注入” ，以便使用（修改样式、类等）
-- `Renderer2`， 又是一个奇怪的东西，没有也可以。 有了更方便。
+- `Renderer2`， 又是一个奇怪的东西，没有也可以。 有了更方便。
 - `HostListener`， 用于监听 `Host` 即属主的 事件。
 
 
-Renderer2 的一些资料
+Renderer2 的一些资料
 
 参考 <https://alligator.io/angular/using-renderer2/>。 主要用来修改 DOM。
 
@@ -311,9 +311,9 @@ animations: [
     - `[@flyInOut]="xxx"`， xxx 是与之单向数据绑定的数据，即状态，可以取值为 `in`，也可以没有。
 2. `trigger` 第二个参数，定义 若干 state 和 transition。
 3. `state` 定义状态名 和 `style`
-4. `transition`， 定义状态转移条件，和  `style`， `animate`
+4. `transition`， 定义状态转移条件，和  `style`， `animate`
 5. `void => *` 表示进入状态， 也可以用 `:enter` 表示
-6. `* => void` 表示离开状态， 也可以用 `:leave` 表示
+6. `* => void` 表示离开状态， 也可以用 `:leave` 表示
 
 
 Animation 虽然不重要，但是想要做好，也是很麻烦的事情。 就像 PPT 里面的动画一样。
@@ -459,7 +459,7 @@ export class HeroService {
 }
 ```
 
-每创建一个新的 service 都会给出这样的模板。 `providedIn: 'root'` 表示由 root injector 创建一个 instance，供全局使用。 也可以是 `providedIn: XxxModule`。
+每创建一个新的 service 都会给出这样的模板。 `providedIn: 'root'` 表示由 root injector 创建一个 instance，供全局使用。 也可以是 `providedIn: XxxModule`。
 
 #### `@NgModule` providers
 
@@ -1057,15 +1057,15 @@ RESTful架构：
 2. 客户端和服务器之间，传递这种 **资源的某种表现层 (Representation)**；
 3. 客户端通过四个HTTP动词，对服务器端资源进行操作，实现"**表现层状态转化(REST)**"。
 
-所以在 RESTful API 中， 每个 API 实际上都是一种 资源， 通过 HTTP动词 对资源进行操作。
+所以在 RESTful API 中， 每个 API 实际上都是一种 资源， 通过 HTTP动词 对资源进行操作。
 
-过去虽然也设计过不少 API，但是完全没有头绪，对 RESTful API 从来没有理解过。。。
+过去虽然也设计过不少 API，但是完全没有头绪，对 RESTful API 从来没有理解过。。。
 
 #### Stateless	Server
 
 这是我之前知道的唯一关于 RESTful API 的事情。 以前走马观花的看了一些东西，唯一记住就是这个。。
 
-意思是： 服务器是无状态的， 每一个请求都是一个新的请求。 客户端负责维护状态(cookies)。 这里的 state 与 REST 中的state 是不同概念。
+意思是： 服务器是无状态的， 每一个请求都是一个新的请求。 客户端负责维护状态(cookies)。 这里的 state 与 REST 中的state 是不同概念。
 
 
 #### idempotence
